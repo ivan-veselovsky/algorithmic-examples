@@ -28,7 +28,7 @@ class FindLongestPathInBinaryTree_SolutionWithO1Cache {
             (IntPair leftResult, IntPair rightResult)
                 -> new IntPair(1 + Math.max(leftResult.leftSubtreeHeight, leftResult.rightSubtreeHeight),
                               1 + Math.max(rightResult.leftSubtreeHeight, rightResult.rightSubtreeHeight)),
-            (Node node, IntPair result) -> maxPathLength[0] = Math.max(result.getSum(), maxPathLength[0]));
+            (Node node, IntPair result) -> maxPathLength[0] = Math.max(maxPathLength[0], result.getSum()));
 
         return maxPathLength[0];
     }
