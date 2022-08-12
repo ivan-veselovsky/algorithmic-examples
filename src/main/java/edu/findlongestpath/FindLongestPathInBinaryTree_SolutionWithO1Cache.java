@@ -26,17 +26,24 @@ class FindLongestPathInBinaryTree_SolutionWithO1Cache {
         }
     }
 
+    private static class MaxValueAccumulator {
+        int maxValue;
+        void accumulate(int anotherValue) {
+            maxValue = Math.max(maxValue, anotherValue);
+        }
+    }
+
     public static int findLongestPath(final Node root) {
-        final int[] maxPathLength = new int[1];
+        final MaxValueAccumulator maxPathLengthAccumulator = new MaxValueAccumulator();
 
         postOrderTraverse(root,
                 () -> MINUS_ONE_PAIR, // just to get (0,0) on leaf nodes.
             (IntPair leftResult, IntPair rightResult)
                 -> new IntPair(1 + leftResult.getMax(),
                               1 + rightResult.getMax()),
-            (Node node, IntPair result) -> maxPathLength[0] = Math.max(maxPathLength[0], result.getSum()));
+            (Node node, IntPair result) -> maxPathLengthAccumulator.accumulate(result.getSum()));
 
-        return maxPathLength[0];
+        return maxPathLengthAccumulator.maxValue;
     }
 
     /**
