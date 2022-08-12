@@ -7,7 +7,9 @@ import java.util.function.Supplier;
 import static edu.findlongestpath.FindLongestPathInBinaryTree_SolutionWithO1Cache.IntPair.MINUS_ONE_PAIR;
 
 /**
- * Solution that uses O(1) additional memory and O(n) time.
+ * Solution that uses O(n) memory and O(n) time.
+ * It does not use any additional data structures to store intermediate data,
+ * but still uses the stack to traverse the tree, hence O(n) memory.
  */
 class FindLongestPathInBinaryTree_SolutionWithO1Cache {
 
