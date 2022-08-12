@@ -20,6 +20,10 @@ class FindLongestPathInBinaryTree_SolutionWithO1Cache {
         private int getSum() {
             return leftSubtreeHeight + rightSubtreeHeight;
         }
+
+        private int getMax() {
+            return Math.max(leftSubtreeHeight, rightSubtreeHeight);
+        }
     }
 
     public static int findLongestPath(final Node root) {
@@ -28,8 +32,8 @@ class FindLongestPathInBinaryTree_SolutionWithO1Cache {
         postOrderTraverse(root,
                 () -> MINUS_ONE_PAIR, // just to get (0,0) on leaf nodes.
             (IntPair leftResult, IntPair rightResult)
-                -> new IntPair(1 + Math.max(leftResult.leftSubtreeHeight, leftResult.rightSubtreeHeight),
-                              1 + Math.max(rightResult.leftSubtreeHeight, rightResult.rightSubtreeHeight)),
+                -> new IntPair(1 + leftResult.getMax(),
+                              1 + rightResult.getMax()),
             (Node node, IntPair result) -> maxPathLength[0] = Math.max(maxPathLength[0], result.getSum()));
 
         return maxPathLength[0];
