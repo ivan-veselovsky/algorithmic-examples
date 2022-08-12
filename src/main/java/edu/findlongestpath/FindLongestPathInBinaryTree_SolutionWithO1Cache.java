@@ -1,11 +1,10 @@
 package edu.findlongestpath;
 
-
-import lombok.AllArgsConstructor;
-
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+
+import static edu.findlongestpath.FindLongestPathInBinaryTree_SolutionWithO1Cache.IntPair.MINUS_ONE_PAIR;
 
 /**
  * Solution that uses O(1) additional memory and O(n) time.
@@ -13,10 +12,8 @@ import java.util.function.Supplier;
 class FindLongestPathInBinaryTree_SolutionWithO1Cache {
 
     /** Auxiliary helper class. */
-    @AllArgsConstructor
-    static class MutablePair {
-        int leftSubtreeHeight;
-        int rightSubtreeHeight;
+    record IntPair(int leftSubtreeHeight, int rightSubtreeHeight) {
+        static final IntPair MINUS_ONE_PAIR = new IntPair(-1, -1);
 
         private int getSum() {
             return leftSubtreeHeight + rightSubtreeHeight;
@@ -27,14 +24,11 @@ class FindLongestPathInBinaryTree_SolutionWithO1Cache {
         final int[] maxPathLength = new int[1];
 
         postOrderTraverse(root,
-                () -> new MutablePair(-1, -1), // just to get (0,0) on leaf nodes.
-            (MutablePair leftResult, MutablePair rightResult)
-                -> new MutablePair(1 + Math.max(leftResult.leftSubtreeHeight, leftResult.rightSubtreeHeight),
-                           1 + Math.max(rightResult.leftSubtreeHeight, rightResult.rightSubtreeHeight)),
-            (Node node, MutablePair result) -> {
-                final int length = result.getSum();
-                maxPathLength[0] = Math.max(length, maxPathLength[0]);
-            });
+                () -> MINUS_ONE_PAIR, // just to get (0,0) on leaf nodes.
+            (IntPair leftResult, IntPair rightResult)
+                -> new IntPair(1 + Math.max(leftResult.leftSubtreeHeight, leftResult.rightSubtreeHeight),
+                              1 + Math.max(rightResult.leftSubtreeHeight, rightResult.rightSubtreeHeight)),
+            (Node node, IntPair result) -> maxPathLength[0] = Math.max(result.getSum(), maxPathLength[0]));
 
         return maxPathLength[0];
     }
