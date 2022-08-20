@@ -1,48 +1,17 @@
 package edu.findlongestpath;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.StringJoiner;
-
 @RequiredArgsConstructor
-class Node {
-//    private final int val;
+@Getter
+public class Node {
+    private final int oneBasedIndex; // 1-based index as used in Heap Sort algorithm.
     private final Node left;
     private final Node right;
 
-//    Integer leftSubtreeHeight;
-//    Integer rightSubtreeHeight;
-
-//    public Node(int val) {
-//        this.val = val;
-//    }
-
-//    public int getVal() {
-//        return val;
-//    }
-
-    public Node getLeft() {
-        return left;
+    @Override
+    public String toString() {
+        return String.valueOf(oneBasedIndex);
     }
-
-//    public void setLeft(Node left) {
-//        this.left = left;
-//    }
-
-    public Node getRight() {
-        return right;
-    }
-
-//    public void setRight(Node right) {
-//        this.right = right;
-//    }
-
-//    @Override
-//    public String toString() {
-//        return new StringJoiner(", ", Node.class.getSimpleName() + "[", "]")
-//                .add("val=" + val)
-//                .add("left=" + (left == null ? "null" : left.val))
-//                .add("right=" + (right == null ? "null" : right.val))
-//                .toString();
-//    }
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
+import static edu.findlongestpath.TreeUtils.*;
 import static org.assertj.core.api.BDDAssertions.then;
 
 class FindLongestPathInBinaryTree_SolutionWithO1CacheTest {
@@ -15,12 +16,12 @@ class FindLongestPathInBinaryTree_SolutionWithO1CacheTest {
     void execute_all_cases(String caseDescription, String tree, int expectedLongestPath) {
         // Given
         Node root = parseTree(tree);
+        printTree(root); // diagnostic
+
         // When
         int longestPathLength1 = FindLongestPathInBinaryTree_SolutionWithO1Cache.findLongestPath(root);
-        //int longestPathLength2 = InterviewSolution.findLongestPath(root);
         // Then
         then(longestPathLength1).describedAs(caseDescription).isEqualTo(expectedLongestPath);
-        //then(longestPathLength2).describedAs(caseDescription).isEqualTo(expectedLongestPath);
     }
 
     static Stream<Arguments> cases() {
@@ -47,37 +48,6 @@ class FindLongestPathInBinaryTree_SolutionWithO1CacheTest {
                                                            "oo oo oo oo"+
                                                          "oooo oooo oooo oooo", 8)
         );
-    }
-
-    static Node parseTree(String treeAsFigure) {
-         int[] array = treeAsFigure
-                 .replaceAll("\\s+", "")
-                 .chars()
-                 .map(x -> (x == 'o') ? 1 : 0)
-                 .toArray();
-         Node[] nodes = new Node[array.length];
-         for (int i = array.length - 1; i >= 0; i--) {
-             if (array[i] > 0) {
-                 nodes[i] = new Node(/* i, */
-                        safeGetNode(nodes, leftChildIndex(i)),
-                        safeGetNode(nodes, rightChildIndex(i)));
-             }
-         }
-         return nodes[0]; // the root
-    }
-
-    static Node safeGetNode(Node[] nodes, int index) {
-        if (index < 0 || index >= nodes.length) {
-            return null;
-        }
-        return nodes[index];
-    }
-
-    static int leftChildIndex(int i) {
-        return ((i + 1) << 1) - 1;
-    }
-    static int rightChildIndex(int i) {
-        return (i + 1) << 1;
     }
 
 }

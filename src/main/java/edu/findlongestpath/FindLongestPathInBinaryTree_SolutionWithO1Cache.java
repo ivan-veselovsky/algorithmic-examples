@@ -2,6 +2,7 @@ package edu.findlongestpath;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static edu.findlongestpath.FindLongestPathInBinaryTree_SolutionWithO1Cache.IntPair.MINUS_ONE_PAIR;
@@ -26,9 +27,10 @@ class FindLongestPathInBinaryTree_SolutionWithO1Cache {
         }
     }
 
-    private static class MaxValueAccumulator {
+    private static class MaxValueAccumulator implements Consumer<Integer> {
         int maxValue;
-        void accumulate(int anotherValue) {
+        @Override
+        public void accept(Integer anotherValue) {
             maxValue = Math.max(maxValue, anotherValue);
         }
     }
@@ -41,7 +43,7 @@ class FindLongestPathInBinaryTree_SolutionWithO1Cache {
             (IntPair leftResult, IntPair rightResult)
                 -> new IntPair(1 + leftResult.getMax(),
                               1 + rightResult.getMax()),
-            (Node node, IntPair result) -> maxPathLengthAccumulator.accumulate(result.getSum()));
+            (Node node, IntPair result) -> maxPathLengthAccumulator.accept(result.getSum()));
 
         return maxPathLengthAccumulator.maxValue;
     }
