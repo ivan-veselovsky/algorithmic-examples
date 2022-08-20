@@ -49,30 +49,26 @@ class TreeUtilsTest {
 
     @Test
     void testcountNodes() {
-         Node node = parseTree("o" +
+         Node node = parseTree(
+                 "o" +
                 "o  o" +
-                "_ o _ o" +
-                "__ o_ __ o_");
-        int count = countNodes(node);
-        then(count).isEqualTo(7);
-        int depth = depth(node);
-        then(depth).isEqualTo(3);
+               "_ o _ o" +
+              "__ o_ __ o");
+        printTree(node);
+        then(countNodes(node)).isEqualTo(7);
+        then(depth(node)).isEqualTo(3);
 
         node = parseTree("o");
-        count = countNodes(node);
-        then(count).isEqualTo(1);
-        depth = depth(node);
-        then(depth).isEqualTo(0);
+        then(countNodes(node)).isEqualTo(1);
+        then(depth(node)).isEqualTo(0);
 
         node = parseTree("o" +
                 "- o" +
                 "-- o-" +
                 "---- -o--" +
-                "---- ---- ---o ----");
-        count = countNodes(node);
-        then(count).isEqualTo(5);
-        depth = depth(node);
-        then(depth).isEqualTo(4);
+                "---- ---- ---o");
+        then(countNodes(node)).isEqualTo(5);
+        then(depth(node)).isEqualTo(4);
     }
 
     @Test
@@ -81,10 +77,11 @@ class TreeUtilsTest {
                                        "o  o" +
                                      "o _ _ o" +
                                    "__ __ __ o_" +
-                                 "____ ____ ____ oo__"
+                                 "____ ____ ____ oo"
         );
-        then(depth(node)).isEqualTo(4);
         printTree(node);
+        then(depth(node)).isEqualTo(4);
+        then(countNodes(node)).isEqualTo(8);
     }
 
     @Test
@@ -100,7 +97,7 @@ class TreeUtilsTest {
         then(countNodes(node)).isEqualTo(16);
 
         thenExceptionOfType(IllegalStateException.class).isThrownBy(() -> parseTree(
-                "o" +
+                        "o" +
                         "o  _" +
                         "o o o o" +
                         "oo oo oo oo"+

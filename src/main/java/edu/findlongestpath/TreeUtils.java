@@ -8,31 +8,6 @@ import java.util.function.BiFunction;
 import static edu.findlongestpath.FindLongestPathInBinaryTree_SolutionWithO1Cache.postOrderTraverse;
 
 public class TreeUtils {
-    static Node parseTreeExperimental(String treeAsFigure) {
-        final int[] nodeIndexArray = treeAsFigure
-                .replaceAll("\\s+", "")
-                .chars()
-                .map(x -> (x == 'o') ? 1 : 0)
-                .toArray();
-        final Deque<Node> nodeDeque = new LinkedList<>();
-        for (int zeroBasedIndex = nodeIndexArray.length - 1; zeroBasedIndex >= 0; zeroBasedIndex--) {
-            final Node node;
-            if (nodeIndexArray[zeroBasedIndex] > 0) {
-                Node rightChild = safeGetNode(nodeDeque, zeroBasedIndex, rightChildIndex(zeroBasedIndex));
-                Node leftChild = safeGetNode(nodeDeque, zeroBasedIndex, leftChildIndex(zeroBasedIndex));
-                node = new Node(zeroBasedIndex + 1, leftChild, rightChild);
-            } else {
-                node = null;
-            }
-            nodeDeque.offerFirst(node);
-        }
-        Node root = nodeDeque.pollFirst();
-        List<Node> orphans = nodeDeque.stream().filter(Objects::nonNull).toList();
-        if (!orphans.isEmpty()) {
-            //throw new IllegalStateException("Some nodes not connected to the tree: " + nodeDeque);
-        }
-        return root;
-    }
 
     public static Node parseTree(String treeAsFigure) {
         final int[] array = treeAsFigure
@@ -66,19 +41,18 @@ public class TreeUtils {
         return nodes[index];
     }
 
-    private static Node safeGetNode(Deque<Node> nodeDeque, int nodeIndex, int childIndex) {
-        int requiredLengthOfDeque = childIndex - nodeIndex;
-        if (nodeDeque.size() < requiredLengthOfDeque) {
-            return null;
-        }
-        return nodeDeque.pollLast();
+    /**
+     * @return Zero based index of left child
+     */
+    static int leftChildIndex(int zeroBasedIndex) {
+        return ((zeroBasedIndex + 1) << 1) - 1;
     }
 
-    static int leftChildIndex(int i) {
-        return ((i + 1) << 1) - 1;
-    }
-    static int rightChildIndex(int i) {
-        return (i + 1) << 1;
+    /**
+     * @return Zero based index of right child
+     */
+    static int rightChildIndex(int zeroBasedIndex) {
+        return (zeroBasedIndex + 1) << 1;
     }
 
     public static int containedPowerOf2(final int numNodes) {
@@ -148,7 +122,7 @@ public class TreeUtils {
             System.out.print(generateSpacer(offset - nodePrintWidth));
 
             //System.out.print("(" + node + ")");
-            System.out.print("*");
+            System.out.print("O");
 
             previousVerticalPosition[0] = verticalPosition;
             previousHorizontalPosition[0] = horizontalPosition;
@@ -160,7 +134,7 @@ public class TreeUtils {
 
     private static String generateSpacer(int length) {
         if (length < 0) {
-            return "";
+            return ""; // TODO: debug and avoid such cases.
         }
         StringBuilder sb = new StringBuilder(length);
         for (int i=0; i<length; i++) {

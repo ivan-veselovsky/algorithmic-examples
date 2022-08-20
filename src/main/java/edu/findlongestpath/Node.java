@@ -12,6 +12,11 @@ public class Node {
 
     @Override
     public String toString() {
-        return String.valueOf(oneBasedIndex);
+        return oneBasedIndex
+                + " ("
+                + (left == null ? null : left.oneBasedIndex)
+                + ", "
+                + (right == null ? null : right.oneBasedIndex)
+                + ")";
     }
 }
