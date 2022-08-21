@@ -114,38 +114,4 @@ public class Solution {
         return product;
     }
 
-//    private static int maxProductOneFree(final int[] nums) {
-//        int[] partialProducts = new int[nums.length];
-//
-//        int maxProduct = Integer.MIN_VALUE;
-//
-//        for (int i = 0; i<nums.length ; i++) {
-//            fillForNextLevel(i, nums, partialProducts);
-//
-//            int maxProductForLevel = getMaxValue(partialProducts, nums.length - i);
-//            if (maxProductForLevel > maxProduct) {
-//                maxProduct = maxProductForLevel;
-//            }
-//
-//            //System.out.println(i + " -> " + Arrays.toString(partialProducts) + "   max = " + maxProductForLevel);
-//        }
-//
-//        return maxProduct;
-//    }
-
-//    private static int getMaxValue(int[] array, int maxIndexExclusive) {
-//        return Arrays.stream(array, 0, maxIndexExclusive).max().getAsInt();
-//    }
-//
-//    private static void fillForNextLevel(int levelIndex, int[] nums, int[] partialProducts) {
-//        if (levelIndex == 0) {
-//            for (int i=0; i < partialProducts.length; i++) {
-//                partialProducts[i] = nums[i];
-//            }
-//        } else {
-//            for (int i=0; i < partialProducts.length - levelIndex; i++) {
-//                partialProducts[i] = nums[i] * partialProducts[i + 1];
-//            }
-//        }
-//    }
 }
