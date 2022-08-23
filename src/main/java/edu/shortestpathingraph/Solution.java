@@ -197,15 +197,15 @@ public class Solution {
             Node node = nodesByDistance.pollFirst(); // start node appears first
 
             if (node.distanceFromStart != Integer.MAX_VALUE) {
-                Set<Edge> adjacentNodesSet = graph.edges[node.index];
-                for (Edge edge: adjacentNodesSet) {
-                    Node adjNode = allNodes[edge.toNode];
+                Set<Edge> outgoingEdges = graph.edges[node.index];
+                for (Edge edge: outgoingEdges) {
+                    Node adjacentNode = allNodes[edge.toNode];
                     int newDistance = node.distanceFromStart + edge.weight;
-                    if (newDistance < adjNode.distanceFromStart) {
-                        boolean rm = nodesByDistance.remove(adjNode); // ***
-                        assert rm;
-                        adjNode.distanceFromStart = newDistance;
-                        boolean added = nodesByDistance.add(adjNode); // *** forces the resorting after distance update
+                    if (newDistance < adjacentNode.distanceFromStart) {
+                        boolean removed = nodesByDistance.remove(adjacentNode); // ***
+                        assert removed;
+                        adjacentNode.distanceFromStart = newDistance;
+                        boolean added = nodesByDistance.add(adjacentNode); // *** forces the resorting after distance update
                         assert added;
                     }
                 }
