@@ -1,5 +1,7 @@
 package edu.shortestpathingraph;
 
+import lombok.EqualsAndHashCode;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -45,6 +47,7 @@ import java.util.*;
  * -1 6
  */
 public class Solution {
+    static final int defaultEdgeWeight = 6;
 
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
@@ -72,16 +75,17 @@ public class Solution {
         int[] verticesAndEdgesArr = readTwoInts(reader);
         int vertices = verticesAndEdgesArr[0];
         int edges = verticesAndEdgesArr[1];
-        final Set<Integer>[] graph = new Set[vertices + 1];
+        final Set<Edge>[] graph = new Set[vertices + 1];
         for (int e=0; e<edges; e++) {
             int[] vertexFromAndTo = readTwoInts(reader);
             assert vertexFromAndTo[0] <= vertices;
             assert vertexFromAndTo[1] <= vertices;
-            boolean addedPrimary = addEdge(graph, vertexFromAndTo[0], vertexFromAndTo[1]);
+            int weight = (vertexFromAndTo.length > 2) ? vertexFromAndTo[2] : defaultEdgeWeight;
+            boolean addedPrimary = addEdge(graph, vertexFromAndTo[0], vertexFromAndTo[1], weight);
             if (!addedPrimary) {
                 System.err.println("Duplicate edge: (" + vertexFromAndTo[0] + ", " + vertexFromAndTo[1] + ")");
             }
-            addEdge(graph, vertexFromAndTo[1], vertexFromAndTo[0]);
+            addEdge(graph, vertexFromAndTo[1], vertexFromAndTo[0], weight);
         }
 
         int startVertex = readOneInt(reader);
@@ -90,22 +94,23 @@ public class Solution {
     }
 
     static class Graph {
-        final Set<Integer>[] edges;
+        final Set<Edge>[] edges;
         final int startVertex;
 
-        public Graph(Set<Integer>[] edges, int startVertex) {
+        public Graph(Set<Edge>[] edges, int startVertex) {
             this.edges = edges;
             this.startVertex = startVertex;
         }
     }
 
-    static boolean addEdge(Set<Integer>[] graph, int vertexFrom, int vertexTo) {
-        Set<Integer> outgoingFrom = graph[vertexFrom];
-        if (outgoingFrom == null) {
-            outgoingFrom = new HashSet<>();
-            graph[vertexFrom] = outgoingFrom;
+    static boolean addEdge(Set<Edge>[] graph, int vertexFrom, int vertexTo, int weight) {
+        Set<Edge> edges = graph[vertexFrom];
+        if (edges == null) {
+            edges = new HashSet<>();
+            graph[vertexFrom] = edges;
         }
-        return outgoingFrom.add(vertexTo);
+        boolean added = edges.add(new Edge(vertexTo, weight));
+        return added;
     }
 
     private static int readOneInt(BufferedReader reader) throws IOException {
@@ -118,24 +123,40 @@ public class Solution {
         String[] verticesAndEdgesArr = line.split("\\s+");
         int int1 = Integer.parseInt(verticesAndEdgesArr[0]);
         int int2 = Integer.parseInt(verticesAndEdgesArr[1]);
-        return new int[] { int1, int2 };
+
+        if (verticesAndEdgesArr.length > 2) {
+            int weight = Integer.parseInt(verticesAndEdgesArr[2]);
+            return new int[] { int1, int2, weight };
+        } else {
+            return new int[] { int1, int2 };
+        }
     }
 
     private static String solveGraph(Graph graph) {
         return dijkstrasAlgorithm(graph);
     }
 
+    @EqualsAndHashCode
+    static class Edge {
+        final int toNode;
+        @EqualsAndHashCode.Exclude
+        final int weight;
+        Edge(int toNode, int weight) {
+            this.toNode = toNode;
+            this.weight = weight;
+        }
+    }
+
     static class Node {
         final int index;
         private int distanceFromStart = Integer.MAX_VALUE;
 
-        public Node(int index) {
+        Node(int index) {
             this.index = index;
         }
     }
 
     private static String dijkstrasAlgorithm(final Graph graph) {
-        final int edgeWeight = 6;
 
         final NavigableSet<Node> nodesByDistance = new TreeSet<>(Comparator
                 .comparingInt((Node n) -> n.distanceFromStart)
@@ -151,8 +172,8 @@ public class Solution {
         final Node[] allNodes = new Node[graph.edges.length];
 
         for (int i=1; i < graph.edges.length; i++) {
-            Set<Integer> set = graph.edges[i];
-            if (set == null) {
+            Set<Edge> edges = graph.edges[i];
+            if (edges == null) {
                 // unreachable node:
                 Node node = new Node(i);
                 node.distanceFromStart = -1;
@@ -176,10 +197,10 @@ public class Solution {
             Node node = nodesByDistance.pollFirst(); // start node appears first
 
             if (node.distanceFromStart != Integer.MAX_VALUE) {
-                Set<Integer> adjacentNodesSet = graph.edges[node.index];
-                for (int adjacentIdx : adjacentNodesSet) {
-                    Node adjNode = allNodes[adjacentIdx];
-                    int newDistance = node.distanceFromStart + edgeWeight;
+                Set<Edge> adjacentNodesSet = graph.edges[node.index];
+                for (Edge edge: adjacentNodesSet) {
+                    Node adjNode = allNodes[edge.toNode];
+                    int newDistance = node.distanceFromStart + edge.weight;
                     if (newDistance < adjNode.distanceFromStart) {
                         boolean rm = nodesByDistance.remove(adjNode); // ***
                         assert rm;
@@ -199,7 +220,9 @@ public class Solution {
         for (int i=1; i< allNodes.length; i++) {
             if (i != startIndex) {
                 Node node = allNodes[i];
-                sb.append((allUnreachable || node.distanceFromStart == Integer.MAX_VALUE) ? -1 : node.distanceFromStart).append(" ");
+                int valueToDisplay = (allUnreachable || node.distanceFromStart == Integer.MAX_VALUE)
+                        ? -1 : node.distanceFromStart;
+                sb.append(valueToDisplay).append(" ");
             }
         }
         return sb.toString();

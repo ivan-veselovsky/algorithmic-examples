@@ -10,6 +10,9 @@ import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
+/**
+ * Last example scheme: <img src="doc-files/Fig-11.jpg"/>
+ */
 class SolutionTest {
 
     @ParameterizedTest
@@ -65,7 +68,26 @@ class SolutionTest {
                         "1 8\n" +
                         "5 2\n" +
                         "3",
-                        "6 -1 -1 -1 -1 -1 12 -1 12 \n")
+                        "6 -1 -1 -1 -1 -1 12 -1 12 \n"),
+                // Example from https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/ :
+                Arguments.of("1\n" +
+                                "9 14\n" +
+                                "1 2 4\n" +
+                                "1 8 8\n" +
+                                "2 8 11\n" +
+                                "2 3 8\n" +
+                                "3 4 7\n" +
+                                "3 6 4\n" +
+                                "3 9 2\n" +
+                                "4 6 14\n" +
+                                "4 5 9\n" +
+                                "5 6 10\n" +
+                                "6 7 2\n" +
+                                "7 9 6\n" +
+                                "7 8 1\n" +
+                                "8 9 7\n" +
+                                "1",
+                        "4 12 19 21 11 9 8 14 \n")
                 );
     }
 }
