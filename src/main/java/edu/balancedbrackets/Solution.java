@@ -66,25 +66,24 @@ enum Brace {
 
     final char ch;
     final boolean isOpening;
+
     Brace(char c, boolean op) {
         ch = c;
         isOpening = op;
     }
 
-        public static Brace forChar(char c) {
-            switch (c) {
-                case '(' : return Brace.ROUND;
-                case '[' : return Brace.SQUARE;
-                case '{' : return Brace.CURLY;
-
-                case ')' : return Brace.ROUND_CL;
-                case ']' : return Brace.SQUARE_CL;
-                case '}' : return Brace.CURLY_CL;
-
-                default: throw new IllegalArgumentException("char: " + c);
-            }
-        }
+    public static Brace forChar(char c) {
+        return switch (c) {
+            case '(' -> Brace.ROUND;
+            case '[' -> Brace.SQUARE;
+            case '{' -> Brace.CURLY;
+            case ')' -> Brace.ROUND_CL;
+            case ']' -> Brace.SQUARE_CL;
+            case '}' -> Brace.CURLY_CL;
+            default -> throw new IllegalArgumentException("char: " + c);
+        };
     }
+}
 
 
 public class Solution {
