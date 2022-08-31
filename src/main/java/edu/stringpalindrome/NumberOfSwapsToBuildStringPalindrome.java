@@ -10,31 +10,28 @@ public class NumberOfSwapsToBuildStringPalindrome {
         for (int i=0; i<halfLength; i++) {
             boolean left = (s.charAt(i) == '1'); // left part
             boolean reversedRight = (s.charAt(s.length() - 1 - i) == '1');  // reversed right part
-            if (left != reversedRight) {
+            if (left ^ reversedRight) {
                 fullDiffCount++;
             }
         }
 
         if (fullDiffCount == 0) {
-            return 0; // palindrome, no swap needed.
+            return 0; // already palindrome, no swap needed.
         }
 
-        int additionalSwap = 0;
-        if (s.length() % 2 == 0) {
-            if (fullDiffCount % 2 != 0) {
+        if (isEven(fullDiffCount)) {
+            return fullDiffCount / 2;
+        } else {
+            if (isEven(s.length())) {
                 return -1; // impossible
-            }
-        } else { // e.g '100' :
-            if (fullDiffCount % 2 == 0) {
-                // middle bit is not used.
             } else {
-                // we have to use the middle bit:
-                fullDiffCount--;
-                additionalSwap++;
+                return 1 + (fullDiffCount - 1) / 2; // use the middle bit
             }
         }
+    }
 
-        return additionalSwap + fullDiffCount / 2;
+    static boolean isEven(int x) {
+        return (x % 2 == 0);
     }
 
 }
