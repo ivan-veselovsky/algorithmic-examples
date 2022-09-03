@@ -85,6 +85,11 @@ public class FindWordOnCharacterGrid {
             return gridData.length;
         }
 
+        /**
+         * Small optimization: we can skip points in the lower right corner
+         * that have no chance to be a valid start point of the word,
+         * because summary length to the right and down is not enough:
+         */
         boolean isValidStartPosition(Point p, String word) {
             return width() - p.x + height() - p.y >= word.length();
         }
