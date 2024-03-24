@@ -1,5 +1,6 @@
 package edu.isbalanced;
 
+import com.google.common.base.Preconditions;
 import edu.common.Node;
 import lombok.val;
 
@@ -10,13 +11,13 @@ public class IsBinaryTreeBalanced {
     static boolean isBalanced(Node<Void> root) {
         val count = new AtomicInteger();
 
-        TraverseResult<Integer> result = dfs(root, DfsKind.POST_ORDER, (node, r1, r2) -> {
+        TraverseResult<Integer> result = dfs(root, DfsKind.POST_ORDER, (node, leftSubtreeResult, rightSubtreeResult) -> {
             if (node == null) {
                 return TraverseResult.positiveOf(0);
             } else {
-                assert r1 != null && r2 != null;
-                int height = 1 + Math.max(r1.data(), r2.data());
-                int diff = Math.abs(r1.data() - r2.data());
+                assert leftSubtreeResult != null && rightSubtreeResult != null;
+                int height = 1 + Math.max(leftSubtreeResult.data(), rightSubtreeResult.data());
+                int diff = Math.abs(leftSubtreeResult.data() - rightSubtreeResult.data());
                 System.out.println("Visiting: " + node + ", height = " + height + ", subtrees height diff = " + diff);
                 return TraverseResult.of(diff <= 1, height);
             }
@@ -35,7 +36,7 @@ public class IsBinaryTreeBalanced {
         return doTraverse(node, traverseKind, (n, r1, r2) -> {
             count.incrementAndGet();
             return lambda.process(n, r1, r2);
-        }, null);
+        }, TraverseResult.positiveNull());
     }
 
     record TraverseResult<T>(boolean continueTraverse, T data) {
@@ -58,6 +59,7 @@ public class IsBinaryTreeBalanced {
     }
 
     private static <T> TraverseResult<T> doTraverse(Node<Void> node, DfsKind traverseKind, NodeLambda<T> lambda, TraverseResult<T> previousResult) {
+        Preconditions.checkArgument(previousResult != null);
         if (node == null) {
             return lambda.process(null, previousResult, null);
         }
