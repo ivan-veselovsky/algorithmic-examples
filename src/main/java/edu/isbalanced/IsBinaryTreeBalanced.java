@@ -1,87 +1,109 @@
 package edu.isbalanced;
 
-import com.google.common.base.Preconditions;
 import edu.common.Node;
 import lombok.val;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Predicate;
 
 public class IsBinaryTreeBalanced {
 
-    record LeftRight(int left, int right) {
-        static LeftRight of(int x, int y) {
-            return new LeftRight(x, y);
-        }
-    }
-    
-    static boolean isBalanced(Node<AtomicReference<LeftRight>> root) {
+    static boolean isBalanced(Node<Void> root) {
         val count = new AtomicInteger();
 
-        boolean result = dfs(root, DfsKind.POST_ORDER, node -> {
-            LeftRight pair = getSubtreeHeightPair(node);
-            node.payload().set(pair);
-            int diff = Math.abs(pair.left() - pair.right());
-            System.out.println("Visiting: " + node + ", subtrees height diff = " + diff);
-            return (diff <= 1);
+        TraverseResult<Integer> result = dfs(root, DfsKind.POST_ORDER, (node, r1, r2) -> {
+            if (node == null) {
+                assert r1 == null && r2 == null;
+                return TraverseResult.positiveOf(0);
+            } else {
+                assert r1 != null && r2 != null;
+                int height = 1 + Math.max(r1.data(), r2.data());
+                int diff = Math.abs(r1.data() - r2.data());
+                System.out.println("Visiting: " + node + ", height = " + height + ", subtrees height diff = " + diff);
+                return TraverseResult.of(diff <= 1, height);
+            }
         }, count);
 
         System.out.println("visited: " + count + " nodes.");
 
-        return result;
+        return result.continueTraverse();
     }
 
-    private static LeftRight getSubtreeHeightPair(Node<AtomicReference<LeftRight>> node) {
-        return LeftRight.of(
-                getSubtreeHeight(node.left()),
-                getSubtreeHeight(node.right()));
-    }
-
-    private static Integer getSubtreeHeight(Node<AtomicReference<LeftRight>> node) {
-        if (node == null) {
+    private static int nullSafeInteger(TraverseResult<Integer> r) {
+        if (r == null) {
             return 0;
         }
-        LeftRight pair = node.payload().get();
-        Preconditions.checkState(pair != null, "node = " + node);
-        // Max of the heights of left and right subtrees:
-        return 1 + Math.max(pair.left(), pair.right());
+        return r.data;
     }
 
     enum DfsKind {
         PRE_ORDER, POST_ORDER, IN_ORDER;
     }
 
-    static <T> boolean dfs(Node<T> node, DfsKind traverseKind, Predicate<Node<T>> lambda, final AtomicInteger count) {
-        return doTraverse(node, traverseKind, x -> {
+    static <T> TraverseResult<T> dfs(Node<Void> node, DfsKind traverseKind, NodeLambda<T> lambda, final AtomicInteger count) {
+        return doTraverse(node, traverseKind, (n, r1, r2) -> {
             count.incrementAndGet();
-            return lambda.test(x);
-        });
+            return lambda.process(n, r1, r2);
+        }, null);
     }
 
-    private static <T> boolean doTraverse(Node<T> node, DfsKind traverseKind, Predicate<Node<T>> lambda) {
-        if (node == null) {
-            return true;
+    record TraverseResult<T>(boolean continueTraverse, T data) {
+        static <T> TraverseResult<T> positiveNull() { return new TraverseResult<>(true, null); }
+        static <T> TraverseResult<T> negativeNull() { return new TraverseResult<>(false, null); }
+        static <T> TraverseResult<T> of(boolean positive, T data) {
+            return new TraverseResult<>(positive, data);
         }
-        final boolean response;
+
+        static <T> TraverseResult<T> positiveOf(T data) {
+            return new TraverseResult<>(true, data);
+        }
+        static <T> TraverseResult<T> negativeOf(T data) {
+            return new TraverseResult<>(false, data);
+        }
+    }
+
+    interface NodeLambda<P> {
+        TraverseResult<P> process(Node<?> node, TraverseResult<P> prev1, TraverseResult<P> prev2);
+    }
+
+    private static <T> TraverseResult<T> doTraverse(Node<Void> node, DfsKind traverseKind, NodeLambda<T> lambda, TraverseResult<T> previousResult) {
+        if (node == null) {
+            return lambda.process(null, previousResult, null);
+        }
         switch (traverseKind) {
             case PRE_ORDER -> {
-                response = lambda.test(node)
-                    && doTraverse(node.left(), traverseKind, lambda)
-                    && doTraverse(node.right(), traverseKind, lambda);
+                TraverseResult<T> center = lambda.process(node, previousResult, null);
+                if (!center.continueTraverse()) {
+                    return center;
+                }
+                TraverseResult<T> left = doTraverse(node.left(), traverseKind, lambda, center);
+                if (!left.continueTraverse()) {
+                    return left;
+                }
+                return doTraverse(node.right(), traverseKind, lambda, center);
             }
             case POST_ORDER -> {
-                response = doTraverse(node.left(), traverseKind, lambda)
-                    && doTraverse(node.right(), traverseKind, lambda)
-                    && lambda.test(node);
+                TraverseResult<T> left = doTraverse(node.left(), traverseKind, lambda, null );
+                if (!left.continueTraverse()) {
+                    return left;
+                }
+                TraverseResult<T> right = doTraverse(node.right(), traverseKind, lambda, null);
+                if (!right.continueTraverse()) {
+                    return right;
+                }
+                return lambda.process(node, left, right);
             }
             case IN_ORDER -> {
-                response = doTraverse(node.left(), traverseKind, lambda)
-                    && lambda.test(node)
-                    && doTraverse(node.right(), traverseKind, lambda);
+                TraverseResult<T> left = doTraverse(node.left(), traverseKind, lambda, null );
+                if (!left.continueTraverse()) {
+                    return left;
+                }
+                TraverseResult<T> center = lambda.process(node, left, null);
+                if (!center.continueTraverse()) {
+                    return center;
+                }
+                return doTraverse(node.right(), traverseKind, lambda, center);
             }
             default -> throw new IllegalStateException("Unknown kind: " + traverseKind);
         }
-        return response;
     }
 }
