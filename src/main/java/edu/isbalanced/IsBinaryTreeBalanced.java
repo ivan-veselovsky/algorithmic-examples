@@ -12,7 +12,6 @@ public class IsBinaryTreeBalanced {
 
         TraverseResult<Integer> result = dfs(root, DfsKind.POST_ORDER, (node, r1, r2) -> {
             if (node == null) {
-                assert r1 == null && r2 == null;
                 return TraverseResult.positiveOf(0);
             } else {
                 assert r1 != null && r2 != null;
@@ -26,13 +25,6 @@ public class IsBinaryTreeBalanced {
         System.out.println("visited: " + count + " nodes.");
 
         return result.continueTraverse();
-    }
-
-    private static int nullSafeInteger(TraverseResult<Integer> r) {
-        if (r == null) {
-            return 0;
-        }
-        return r.data;
     }
 
     enum DfsKind {
@@ -79,21 +71,21 @@ public class IsBinaryTreeBalanced {
                 if (!left.continueTraverse()) {
                     return left;
                 }
-                return doTraverse(node.right(), traverseKind, lambda, center);
+                return doTraverse(node.right(), traverseKind, lambda, left);
             }
             case POST_ORDER -> {
-                TraverseResult<T> left = doTraverse(node.left(), traverseKind, lambda, null );
+                TraverseResult<T> left = doTraverse(node.left(), traverseKind, lambda, previousResult);
                 if (!left.continueTraverse()) {
                     return left;
                 }
-                TraverseResult<T> right = doTraverse(node.right(), traverseKind, lambda, null);
+                TraverseResult<T> right = doTraverse(node.right(), traverseKind, lambda, left);
                 if (!right.continueTraverse()) {
                     return right;
                 }
                 return lambda.process(node, left, right);
             }
             case IN_ORDER -> {
-                TraverseResult<T> left = doTraverse(node.left(), traverseKind, lambda, null );
+                TraverseResult<T> left = doTraverse(node.left(), traverseKind, lambda, previousResult);
                 if (!left.continueTraverse()) {
                     return left;
                 }
