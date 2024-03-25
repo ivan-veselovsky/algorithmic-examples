@@ -45,7 +45,7 @@ public class NetworkCart {
         private final Driver driver;
         @Getter
         private final String name;
-        @Getter @NonNull
+        @Getter
         private final Set<Node> neighbours = new LinkedHashSet<>();
 
         private final Set<Node> sentNodes = new HashSet<>();
@@ -54,6 +54,9 @@ public class NetworkCart {
 
         static Node of(Driver driver, String name) {
             return new Node(driver, name, false);
+        }
+        static Node startOf(Driver driver, String name) {
+            return new Node(driver, name, true);
         }
 
         @Override
