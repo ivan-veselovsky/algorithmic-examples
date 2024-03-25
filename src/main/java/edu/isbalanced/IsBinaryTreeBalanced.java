@@ -54,6 +54,7 @@ public class IsBinaryTreeBalanced {
         }
     }
 
+    @FunctionalInterface
     interface NodeLambda<P> {
         TraverseResult<P> process(Node<?> node, TraverseResult<P> prev1, TraverseResult<P> prev2);
     }
