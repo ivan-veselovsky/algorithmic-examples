@@ -49,8 +49,12 @@ public class NetworkCart {
         private final Set<Node> neighbours = new LinkedHashSet<>();
 
         private final Set<Node> sentNodes = new HashSet<>();
-        private final boolean isStart;
+        private final boolean isStartNode;
         private Node parent;
+
+        static Node of(Driver driver, String name) {
+            return new Node(driver, name, false);
+        }
 
         @Override
         public String toString() {
@@ -58,26 +62,26 @@ public class NetworkCart {
         }
 
         void onReceive(final @NonNull Node source, Cart cart) {
-            if (parent == null && !isStart) {
-                parent = source;
+            if (parent == null && !isStartNode) {
+                parent = source; // start node does not have parent.
             }
 
             Node target = parent;
             if (!sentNodes.contains(source) && source != parent) {
-                target = source; // sent it right back
+                target = source; // Send it right back.
             } else {
+                // Sent it to the 1st node that was not yet processed:
                 for (Node neighbour: getNeighbours()) {
                     if (neighbour != parent && !sentNodes.contains(neighbour)) {
                         target = neighbour;
-                        break; // we cannot send to multiple neighbours
+                        break; // there is only one cart, so we cannot send to multiple neighbours!
                     }
                 }
             }
 
-            final boolean isDone = (target == parent);
-            if (isDone) {
-                if (!isStart) { // when start node receives the message back,
-                    // we need to exist.
+            final boolean isNodeProcessingFinished = (target == parent);
+            if (isNodeProcessingFinished) {
+                if (!isStartNode) { // when the *start* node receives the message back, we need to exist.
                     doSend(parent);
                 }
                 onDone(cart);
@@ -85,13 +89,11 @@ public class NetworkCart {
                 doSend(target);
             }
 
-            if (!isStart) {
-                if (isDone) {
-                    assert getNeighbours().size() == sentNodes.size() : " Node " + this
-                            + ": " + getNeighbours().size() + " == " + sentNodes.size();
-                } else {
-                    assert sentNodes.size() < getNeighbours().size();
-                }
+            if (isNodeProcessingFinished) {
+                assert getNeighbours().size() == sentNodes.size() : " Node " + this
+                        + ": " + getNeighbours().size() + " == " + sentNodes.size();
+            } else {
+                assert sentNodes.size() < getNeighbours().size();
             }
         }
 
