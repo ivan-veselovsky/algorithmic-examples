@@ -29,10 +29,10 @@ class NetworkCartTest {
         Node d = Node.of(driver, "d");
         linkNodes(a, d);
 
-        Node start = Node.startOf(driver, "start");
+        Node start = Node.of(driver, "start");
         linkNodes(a, start);
 
-        start.doSend(a);
+        driver.send(null, start);
         driver.processMessagesInALoop();
 
         then(cart.getNames()).containsExactly("c", "b", "d", "a", "start");
@@ -57,16 +57,39 @@ class NetworkCartTest {
         linkNodes(c, f);
         linkNodes(e, f);
 
-        val d = new Node(driver, "d", false);
+        val d = Node.of(driver, "d");
         linkNodes(a, d);
 
-        val start = new Node(driver, "start", true);
+        val start = Node.of(driver, "start");
         linkNodes(a, start);
 
-        start.doSend(a);
+        driver.send(null, start);
         driver.processMessagesInALoop();
 
         then(cart.getNames()).containsExactly("f", "e", "c", "b", "d", "a", "start");
+    }
+
+    @Test
+    void start_has_several_neighbours() {
+        val cart = new Cart();
+        val driver = new Driver(cart);
+
+        val start = Node.of(driver, "start");
+        val a = Node.of(driver,"a");
+        val b = Node.of(driver, "b");
+        val c = Node.of(driver, "c");
+        linkNodes(start, a);
+        linkNodes(start, b);
+        linkNodes(start, c);
+
+        linkNodes(a, b);
+        linkNodes(b, c);
+        linkNodes(a, c);
+
+        driver.send(null, start);
+        driver.processMessagesInALoop();
+
+        then(cart.getNames()).containsExactly("c", "b", "a", "start");
     }
 
 }

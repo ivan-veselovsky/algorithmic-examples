@@ -5,12 +5,13 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class NetworkCart {
 
-    record Message(Node source, Node destination) {
+    record Message(Node source, @NonNull Node destination) {
         @Override
         public String toString() {
             return source  + " -> " + destination;
@@ -23,7 +24,7 @@ public class NetworkCart {
         private final Cart cart;
         private final AtomicReference<Message> messageRef = new AtomicReference<>();
 
-        void send(@NonNull Node source, @NonNull Node destination) {
+        void send(@Nullable Node source, @NonNull Node destination) {
             Message message = new Message(source, destination);
             Preconditions.checkState(messageRef.compareAndSet(null, message),
                         "failed to send: " + message);
@@ -48,15 +49,19 @@ public class NetworkCart {
         @Getter
         private final Set<Node> neighbours = new LinkedHashSet<>();
 
+        /** Holds list of nodes we sent the Cart to.
+         * Initially this set is empty.
+         * In the end of node processing it will contain all neighbours. */
         private final Set<Node> sentNodes = new HashSet<>();
-        private final boolean isStartNode;
-        private Node parent;
+        /** The Node we received the Cart from 1st time.
+         * This is also the node the Cart will be sent in the very end, last time we send it.
+         * For "start" node this is always null. */
+        private @Nullable Node parent;
+
+        private int receiveCount;
 
         static Node of(Driver driver, String name) {
-            return new Node(driver, name, false);
-        }
-        static Node startOf(Driver driver, String name) {
-            return new Node(driver, name, true);
+            return new Node(driver, name);
         }
 
         @Override
@@ -64,9 +69,11 @@ public class NetworkCart {
             return name;
         }
 
-        void onReceive(final @NonNull Node source, Cart cart) {
-            if (parent == null && !isStartNode) {
-                parent = source; // start node does not have parent.
+        /** Source is null when the start node receives the Cart */
+        void onReceive(final @Nullable Node source, Cart cart) {
+            receiveCount++;
+            if (receiveCount == 1) {
+                parent = source; // start node does not have a parent.
             }
 
             Node target = parent;
@@ -84,19 +91,19 @@ public class NetworkCart {
 
             final boolean isNodeProcessingFinished = (target == parent);
             if (isNodeProcessingFinished) {
-                if (!isStartNode) { // when the *start* node receives the message back, we need to exist.
-                    doSend(parent);
-                }
                 onDone(cart);
-            } else {
+            }
+
+            if (target != null) {
                 doSend(target);
             }
 
             if (isNodeProcessingFinished) {
+                assert (parent == null) || (target == parent);
                 assert getNeighbours().size() == sentNodes.size() : " Node " + this
                         + ": " + getNeighbours().size() + " == " + sentNodes.size();
             } else {
-                assert sentNodes.size() < getNeighbours().size();
+                assert (parent == null) || (sentNodes.size() < getNeighbours().size());
             }
         }
 
