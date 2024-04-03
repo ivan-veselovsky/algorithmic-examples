@@ -1,6 +1,6 @@
 package edu.shortestpathingraph;
 
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,13 +18,13 @@ import java.util.*;
  *
  * Input Format
  *
- * The first line contains an integer, , the number of queries.
+ * The first line contains an integer, the number of queries.
  *
  * Each of the following  sets of lines is as follows:
  *
  * The first line contains two space-separated integers,  and , the number of nodes and the number of edges.
- * Each of the next  lines contains two space-separated integers,  and , describing an edge connecting node  to node .
- * The last line contains a single integer, , the index of the starting node.
+ * Each of the next lines contains two space-separated integers,  and , describing an edge connecting node to node.
+ * The last line contains a single integer, the index of the starting node.
  * Constraints
  *
  * Output Format
@@ -73,13 +73,14 @@ public class Solution {
 
     static Graph parseGraph(final BufferedReader reader) throws IOException {
         int[] verticesAndEdgesArr = readTwoInts(reader);
-        int vertices = verticesAndEdgesArr[0];
-        int edges = verticesAndEdgesArr[1];
-        final Set<Edge>[] graph = new Set[vertices + 1];
+        final int vertices = verticesAndEdgesArr[0];
+        final int edges = verticesAndEdgesArr[1];
+        final Set<Edge>[] graph = new Set[vertices];
         for (int e=0; e<edges; e++) {
             int[] vertexFromAndTo = readTwoInts(reader);
-            assert vertexFromAndTo[0] <= vertices;
-            assert vertexFromAndTo[1] <= vertices;
+            subtractOne(vertexFromAndTo);
+            assert vertexFromAndTo[0] < vertices;
+            assert vertexFromAndTo[1] < vertices;
             int weight = (vertexFromAndTo.length > 2) ? vertexFromAndTo[2] : defaultEdgeWeight;
             boolean addedPrimary = addEdge(graph, vertexFromAndTo[0], vertexFromAndTo[1], weight);
             if (!addedPrimary) {
@@ -88,18 +89,55 @@ public class Solution {
             addEdge(graph, vertexFromAndTo[1], vertexFromAndTo[0], weight);
         }
 
-        int startVertex = readOneInt(reader);
+        int startVertex = readOneInt(reader) - 1;
+        assert startVertex < vertices;
 
         return new Graph(graph, startVertex);
     }
 
-    static class Graph {
-        final Set<Edge>[] edges;
-        final int startVertex;
+    private static void subtractOne(int[] xy) {
+        xy[0] -= 1;
+        xy[1] -= 1;
+    }
 
-        public Graph(Set<Edge>[] edges, int startVertex) {
+    @RequiredArgsConstructor
+    @Getter
+    static class Graph {
+        // TODO: replace array with immutable List
+        private final Set<Edge>[] edges; // 0-based
+
+        private final List<Node> nodes; // 0-based
+        private final int startVertex;
+        int getNumberOfEdges() {
+            return Arrays.stream(edges).filter(Objects::nonNull).mapToInt(Set::size).sum();
+        }
+        int getMaxEdgeWeight() {
+            return Arrays.stream(edges).filter(Objects::nonNull).flatMap(Set::stream).mapToInt(e -> e.weight).max().getAsInt();
+        }
+        int numberOfVertices() {
+            return edges.length;
+        }
+        Graph(Set<Edge>[] edges, int startVertex) {
             this.edges = edges;
+            this.nodes = createNodes();
             this.startVertex = startVertex;
+        }
+        private List<Node> createNodes() {
+            final Node[] nodes = new Node[edges.length];
+            for (int i=0; i<edges.length; i++) {
+                nodes[i] = new Node(i);
+
+                Set<Edge> adjacencySet = edges[i];
+                if (adjacencySet != null && !adjacencySet.isEmpty()) {
+                    for (Edge edge: adjacencySet) {
+                        assert edge.toNode < edges.length;
+//                        if (nodes[edge.toNode] == null) {
+//                            nodes[edge.toNode] = new Node(edge.toNode); // to Node
+//                        }
+                    }
+                }
+            }
+            return List.of(nodes);
         }
     }
 
@@ -137,93 +175,131 @@ public class Solution {
     }
 
     @EqualsAndHashCode
+    @RequiredArgsConstructor
     static class Edge {
         final int toNode;
         @EqualsAndHashCode.Exclude
         final int weight;
-        Edge(int toNode, int weight) {
-            this.toNode = toNode;
-            this.weight = weight;
+
+        @Override
+        public String toString() {
+            return String.valueOf(toNode);
         }
     }
 
+    @RequiredArgsConstructor
+    @Getter
     static class Node {
         final int index;
-        private int distanceFromStart = Integer.MAX_VALUE;
+        private Integer distanceFromStart;
+        private int relaxCount;
 
-        Node(int index) {
-            this.index = index;
+        boolean canRelaxTo(int newDistance) {
+            return distanceFromStart == null || newDistance < distanceFromStart;
+        }
+
+        void relax(int newDistance) {
+            assert distanceFromStart == null || newDistance < distanceFromStart;
+            System.out.println("    rlx " + index + " " + distanceFromStart + " -> " + newDistance);
+            if (distanceFromStart != null) {
+                relaxCount++;
+            }
+            distanceFromStart = newDistance;
+        }
+
+        @Override
+        public String toString() {
+            if (distanceFromStart == null) {
+                return String.valueOf(index);
+            } else {
+                return index + " d=" + distanceFromStart + " rlxCnt=" + relaxCount;
+            }
         }
     }
 
-    private static String dijkstrasAlgorithm(final Graph graph) {
-
-        final NavigableSet<Node> nodesByDistance = new TreeSet<>(Comparator
-                .comparingInt((Node n) -> n.distanceFromStart)
-                .thenComparingInt((Node n) -> n.index)
-                .thenComparing((Node n1, Node n2) -> {
-                    if (n1 == n2) {
-                        return 0;
-                    }
-                    throw new IllegalStateException("must never go there.");
-                })
-        );
-
-        final Node[] allNodes = new Node[graph.edges.length];
-
-        for (int i=1; i < graph.edges.length; i++) {
-            Set<Edge> edges = graph.edges[i];
-            if (edges == null) {
-                // unreachable node:
-                Node node = new Node(i);
-                node.distanceFromStart = -1;
-                allNodes[i] = node;
-                if (i == graph.startVertex) {
-                    // unreachable start node:
-                    node.distanceFromStart = 0;
-                    return composeResult(allNodes, graph.startVertex, true);
-                }
-            } else {
-                Node node = new Node(i);
-                if (i == graph.startVertex) {
-                    node.distanceFromStart = 0; // start
-                }
-                nodesByDistance.add(node);
-                allNodes[i] = node;
+    private static int compareTwoNullables(Integer x, Integer y) {
+        if (x == null || y == null) {
+            if (x == null && y == null) {
+                return 0;
             }
+            return (x == null) ? 1 : -1;
+        } else {
+            return x.compareTo(y);
+        }
+    }
+
+    static String dijkstrasAlgorithm(final Graph graph) {
+        val maxEdgeWeight = graph.getMaxEdgeWeight();
+
+        System.out.println("max edge weight = " + maxEdgeWeight);
+
+        final Comparator<Node> cmp = (@NonNull Node n1, @NonNull Node n2) -> {
+            if (n1 == n2) {
+                return 0;
+            }
+            int cmp1 = compareTwoNullables(n1.distanceFromStart, n2.distanceFromStart);
+            if (cmp1 != 0) {
+                return cmp1;
+            }
+            int cmp2 = compareTwoNullables(n1.index, n2.index);
+            if (cmp2 != 0) {
+                return cmp2;
+            }
+            throw new IllegalArgumentException();
+        };
+        final NavigableSet<Node> nodesByDistance = new TreeSet<>(cmp);
+
+        Node startNode = graph.getNodes().get(graph.getStartVertex());
+        startNode.distanceFromStart = 0; // start
+        nodesByDistance.add(startNode); // enqueue Start node
+        if (graph.edges[graph.getStartVertex()] == null || graph.edges[graph.getStartVertex()].isEmpty()) {
+            return composeResult(graph.getNodes(), graph.startVertex, true);
         }
 
         while (!nodesByDistance.isEmpty()) {
-            Node node = nodesByDistance.pollFirst(); // start node appears first
+            System.out.println("Queue: " + nodesByDistance);
+            final Node node = nodesByDistance.pollFirst(); // start node appears first
 
-            if (node.distanceFromStart != Integer.MAX_VALUE) {
-                Set<Edge> outgoingEdges = graph.edges[node.index];
-                for (Edge edge: outgoingEdges) {
-                    Node adjacentNode = allNodes[edge.toNode];
-                    int newDistance = node.distanceFromStart + edge.weight;
-                    if (newDistance < adjacentNode.distanceFromStart) {
-                        boolean removed = nodesByDistance.remove(adjacentNode); // ***
-                        assert removed;
-                        adjacentNode.distanceFromStart = newDistance;
-                        boolean added = nodesByDistance.add(adjacentNode); // *** forces the resorting after distance update
-                        assert added;
+            Set<Edge> outgoingEdges = graph.edges[node.index];
+            for (Edge edge: outgoingEdges) {
+                Node adjacentNode = graph.getNodes().get(edge.toNode);
+                int newDistance = node.distanceFromStart + edge.weight;
+                if (adjacentNode.canRelaxTo(newDistance)) {
+                    boolean removed = nodesByDistance.remove(adjacentNode);
+                    if (removed) {
+                        //System.out.println("***** already contained in queue: " + adjacentNode);
                     }
+                    checkQueue(maxEdgeWeight, nodesByDistance);
+
+                    adjacentNode.relax(newDistance);
+
+                    boolean added = nodesByDistance.add(adjacentNode); // *** forces the resorting after distance update
+                    assert added : "Was not added: " + adjacentNode + ", queue: " + nodesByDistance;
+                    checkQueue(maxEdgeWeight, nodesByDistance);
                 }
             }
         }
 
-        return composeResult(allNodes, graph.startVertex, false);
+        return composeResult(graph.getNodes(), graph.startVertex, false);
     }
 
-    private static String composeResult(Node[] allNodes, int startIndex, boolean allUnreachable) {
+    private static void checkQueue(int maxEdgeWeight, SortedSet<Node> queue) {
+        if (queue.size() > 1) {
+            Node first = queue.first();
+            Node last = queue.last();
+            int diff = last.getDistanceFromStart() - first.getDistanceFromStart();
+            assert diff <= maxEdgeWeight;
+        }
+    }
+
+    private static String composeResult(List<Node> allNodes, int startIndex, boolean allUnreachable) {
         StringBuilder sb = new StringBuilder();
-        for (int i=1; i< allNodes.length; i++) {
-            if (i != startIndex) {
-                Node node = allNodes[i];
-                int valueToDisplay = (allUnreachable || node.distanceFromStart == Integer.MAX_VALUE)
-                        ? -1 : node.distanceFromStart;
+        for (int i=0; i< allNodes.size(); i++) {
+                Node node = allNodes.get(i);
+                assert node != null;
+                String valueToDisplay = (allUnreachable || node.distanceFromStart == null)
+                        ? "_" : String.valueOf(node.distanceFromStart);
                 sb.append(valueToDisplay).append(" ");
-            }
         }
         return sb.toString();
     }

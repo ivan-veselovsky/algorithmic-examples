@@ -1,12 +1,16 @@
 package edu.shortestpathingraph;
 
+import lombok.val;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.List;
+import java.util.*;
+
+import edu.shortestpathingraph.Solution.*;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -34,8 +38,8 @@ class SolutionTest {
                                 "3 1\n" +
                                 "2 3\n" +
                                 "2",
-                        "6 6 -1 \n" +
-                                "-1 6 \n"),
+                        "0 6 6 _ \n" +
+                                "_ 0 6 \n"),
                 Arguments.of("1\n" +
                                 "6 4\n" +
                                 "1 2\n" +
@@ -43,7 +47,7 @@ class SolutionTest {
                                 "3 4\n" +
                                 "1 5\n" +
                                 "1\n",
-                        "6 12 18 6 -1 \n"),
+                        "0 6 12 18 6 _ \n"),
                 Arguments.of("1\n" +
                                 "7 4\n" +
                                 "1 2\n" +
@@ -51,13 +55,13 @@ class SolutionTest {
                                 "3 4\n" +
                                 "2 5\n" +
                                 "2",
-                        "6 12 18 6 -1 -1 \n"),
+                        "6 0 12 18 6 _ _ \n"),
                 Arguments.of("1\n" +
                                 "4 2\n" +
                                 "1 2\n" +
                                 "1 3\n" +
                                 "4\n",
-                        "-1 -1 -1 \n"),
+                        "_ _ _ _ \n"),
                 // NB: 2 duplicated edges left there, as they appear in original testcase.
                 Arguments.of("1\n" +
                         "10 6\n" +
@@ -68,7 +72,7 @@ class SolutionTest {
                         "1 8\n" +
                         "5 2\n" +
                         "3",
-                        "6 -1 -1 -1 -1 -1 12 -1 12 \n"),
+                        "6 _ 0 _ _ _ _ 12 _ 12 \n"),
                 // Example from https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/ :
                 Arguments.of("1\n" +
                                 "9 14\n" +
@@ -87,7 +91,69 @@ class SolutionTest {
                                 "7 8 1\n" +
                                 "8 9 7\n" +
                                 "1",
-                        "4 12 19 21 11 9 8 14 \n")
+                        "0 4 12 19 21 11 9 8 14 \n")
                 );
+    }
+
+    @Test
+    void random_matrix() {
+        val numberOfVertices = 1000;
+        val random = new Random(12345L);
+
+        Set<Solution.Edge>[] edges = new Set[numberOfVertices];
+        for (int i = 0; i<numberOfVertices; i++) {
+            edges[i] = getRandomEdgeSet(i, numberOfVertices, random,
+             numberOfVertices, 1);
+        }
+
+        Solution.Graph graph = new Solution.Graph(edges, 0);
+        System.out.println("num vertices = " + numberOfVertices);
+        System.out.println("num edges = " + graph.getNumberOfEdges());
+
+        String result = Solution.dijkstrasAlgorithm(graph);
+
+        printRelaxCounts(graph);
+
+        System.out.println(result);
+    }
+
+    private void printRelaxCounts(Graph graph) {
+        SortedSet<Node> histogram = new TreeSet<>((Node n1, Node n2) -> {
+            if (n1 == n2) {
+                return 0;
+            }
+            int diff = n1.getRelaxCount() - n2.getRelaxCount();
+            if (diff != 0) {
+                return diff;
+            }
+            diff = n1.getIndex() - n2.getIndex();
+            if (diff != 0) {
+                return diff;
+            }
+            throw new IllegalStateException();
+        });
+        histogram.addAll(graph.getNodes());
+        System.out.println(" ======= Relax Counts: ");
+        histogram.stream().forEachOrdered(n -> {
+            System.out.println(n + "    rlx cnt = " + n.getRelaxCount());
+            assert n.getRelaxCount() <= 1;
+        });
+    }
+
+    private Set<Solution.Edge> getRandomEdgeSet(int fromNode, int numVertices, Random random,
+                                                int heavyWeight, int lightWeight) {
+        Set<Solution.Edge> set = new HashSet<>();
+        for (int i = 1; i < numVertices; i++) {
+            if (i != fromNode) { // let it be nonreflexive
+                boolean connectsToI = (random.nextInt(100) < 7); // 21
+                boolean heavyEdge = (random.nextInt(100) < 80);
+                if (connectsToI) {
+                    int weight1 = heavyEdge ? heavyWeight : lightWeight;
+                    set.add(new Solution.Edge(i, weight1));
+                }
+            }
+        }
+        System.out.println(fromNode + " -> " + set);
+        return Set.copyOf(set);
     }
 }
