@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-class SolutionTest {
+class DijkstrasTest {
 
     @Test
     void single_negative() {

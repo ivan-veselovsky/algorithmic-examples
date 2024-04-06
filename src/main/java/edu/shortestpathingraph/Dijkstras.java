@@ -46,7 +46,7 @@ import java.util.*;
  * 6 6 -1
  * -1 6
  */
-public class Solution {
+public class Dijkstras {
     static final int defaultEdgeWeight = 6;
 
     public static void main(String[] args) throws IOException {

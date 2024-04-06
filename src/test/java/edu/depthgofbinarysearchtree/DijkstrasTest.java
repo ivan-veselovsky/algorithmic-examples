@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-class SolutionTest {
+class DijkstrasTest {
 
     @ParameterizedTest
     @MethodSource("cases")

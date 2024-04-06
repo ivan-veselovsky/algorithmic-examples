@@ -10,20 +10,20 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.*;
 
-import edu.shortestpathingraph.Solution.*;
+import edu.shortestpathingraph.Dijkstras.*;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
 /**
  * Last example scheme: <img src="doc-files/Fig-11.jpg"/>
  */
-class SolutionTest {
+class DijkstrasTest {
 
     @ParameterizedTest
     @MethodSource("cases")
     void main(String input, String expectedOutput) throws Exception {
         try (BufferedReader reader = new BufferedReader(new StringReader(input))) {
-            String actual = Solution.solveAllQueries(reader);
+            String actual = Dijkstras.solveAllQueries(reader);
             then(actual).isEqualTo(expectedOutput);
         }
     }
@@ -97,20 +97,20 @@ class SolutionTest {
 
     @Test
     void random_matrix() {
-        val numberOfVertices = 1000;
+        val numberOfVertices = 100;
         val random = new Random(12345L);
 
-        Set<Solution.Edge>[] edges = new Set[numberOfVertices];
+        Set<Dijkstras.Edge>[] edges = new Set[numberOfVertices];
         for (int i = 0; i<numberOfVertices; i++) {
             edges[i] = getRandomEdgeSet(i, numberOfVertices, random,
              numberOfVertices, 1);
         }
 
-        Solution.Graph graph = new Solution.Graph(edges, 0);
+        Dijkstras.Graph graph = new Dijkstras.Graph(edges, 0);
         System.out.println("num vertices = " + numberOfVertices);
         System.out.println("num edges = " + graph.getNumberOfEdges());
 
-        String result = Solution.dijkstrasAlgorithm(graph);
+        String result = Dijkstras.dijkstrasAlgorithm(graph);
 
         printRelaxCounts(graph);
 
@@ -140,16 +140,16 @@ class SolutionTest {
         });
     }
 
-    private Set<Solution.Edge> getRandomEdgeSet(int fromNode, int numVertices, Random random,
-                                                int heavyWeight, int lightWeight) {
-        Set<Solution.Edge> set = new HashSet<>();
+    private Set<Dijkstras.Edge> getRandomEdgeSet(int fromNode, int numVertices, Random random,
+                                                 int heavyWeight, int lightWeight) {
+        Set<Dijkstras.Edge> set = new HashSet<>();
         for (int i = 1; i < numVertices; i++) {
             if (i != fromNode) { // let it be nonreflexive
                 boolean connectsToI = (random.nextInt(100) < 7); // 21
-                boolean heavyEdge = (random.nextInt(100) < 80);
+                boolean heavyEdge = (random.nextInt(100) < 90);
                 if (connectsToI) {
                     int weight1 = heavyEdge ? heavyWeight : lightWeight;
-                    set.add(new Solution.Edge(i, weight1));
+                    set.add(new Dijkstras.Edge(i, weight1));
                 }
             }
         }

@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import static edu.findlongestpath.TreeUtils.*;
 import static org.assertj.core.api.BDDAssertions.then;
 
-class FindLongestPathInBinaryTree_SolutionWithO1CacheTest {
+class FindLongestPathInBinaryTree_DijkstrasWithO1CacheTest {
 
     @ParameterizedTest
     @MethodSource("cases")
