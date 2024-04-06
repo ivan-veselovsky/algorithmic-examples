@@ -36,6 +36,7 @@ public class ArrayRotation {
         }
     }
 
+    // TODO: very slow implementation, improve.
     private int least_common_multiple(int x, int y) {
         assert y < x;
         for (int i=1; i < y; i++) {
