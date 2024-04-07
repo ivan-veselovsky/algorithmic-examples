@@ -122,21 +122,21 @@ class DijkstrasTest {
             if (n1 == n2) {
                 return 0;
             }
-            int diff = n1.getRelaxCount() - n2.getRelaxCount();
+            int diff = n1.relaxCount() - n2.relaxCount();
             if (diff != 0) {
                 return diff;
             }
-            diff = n1.getIndex() - n2.getIndex();
+            diff = n1.index() - n2.index();
             if (diff != 0) {
                 return diff;
             }
             throw new IllegalStateException();
         });
-        histogram.addAll(graph.getNodes());
+        histogram.addAll(graph.nodes());
         System.out.println(" ======= Relax Counts: ");
         histogram.stream().forEachOrdered(n -> {
-            System.out.println(n + "    rlx cnt = " + n.getRelaxCount());
-            assert n.getRelaxCount() <= 1;
+            System.out.println(n + "    rlx cnt = " + n.relaxCount());
+            assert n.relaxCount() <= 1;
         });
     }
 

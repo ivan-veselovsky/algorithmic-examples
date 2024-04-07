@@ -18,8 +18,8 @@ package edu.findlongestpath;
 //        }
 //        int maxNode = getMaxPathLength(node);
 //
-//        int maxLeftSubtree = getMaxForSubtree(node.getLeft());
-//        int maxRightSubtree = getMaxForSubtree(node.getRight());
+//        int maxLeftSubtree = getMaxForSubtree(node.left());
+//        int maxRightSubtree = getMaxForSubtree(node.right());
 //
 //        int maxOfChildSubtrees = Math.max(maxLeftSubtree, maxRightSubtree);
 //        return Math.max(maxOfChildSubtrees, maxNode);
@@ -46,8 +46,8 @@ package edu.findlongestpath;
 //            return node.leftSubtreeHeight;
 //        }
 //        node.leftSubtreeHeight = 1 + Math.max(
-//                getLeftSubtreeHeight(node.getLeft()),
-//                getRightSubtreeHeight(node.getLeft())
+//                getLeftSubtreeHeight(node.left()),
+//                getRightSubtreeHeight(node.left())
 //        );
 //        return node.leftSubtreeHeight;
 //    }
@@ -60,8 +60,8 @@ package edu.findlongestpath;
 //            return node.rightSubtreeHeight;
 //        }
 //        node.rightSubtreeHeight = 1 + Math.max(
-//                getLeftSubtreeHeight(node.getRight()),
-//                getRightSubtreeHeight(node.getRight())
+//                getLeftSubtreeHeight(node.right()),
+//                getRightSubtreeHeight(node.right())
 //        );
 //        return node.rightSubtreeHeight;
 //    }

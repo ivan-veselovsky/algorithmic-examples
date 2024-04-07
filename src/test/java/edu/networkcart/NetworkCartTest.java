@@ -10,8 +10,8 @@ import static org.assertj.core.api.BDDAssertions.then;
 class NetworkCartTest {
 
     private static void linkNodes(Node x, Node y) {
-        x.getNeighbours().add(y);
-        y.getNeighbours().add(x);
+        x.neighbours().add(y);
+        y.neighbours().add(x);
     }
 
     @Test

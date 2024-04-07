@@ -81,7 +81,7 @@ public class NetworkCart {
                 target = source; // Send it right back.
             } else {
                 // Sent it to the 1st node that was not yet processed:
-                for (Node neighbour: getNeighbours()) {
+                for (Node neighbour: neighbours()) {
                     if (neighbour != parent && !sentNodes.contains(neighbour)) {
                         target = neighbour;
                         break; // there is only one cart, so we cannot send to multiple neighbours!
@@ -100,10 +100,10 @@ public class NetworkCart {
 
             if (isNodeProcessingFinished) {
                 assert (parent == null) || (target == parent);
-                assert getNeighbours().size() == sentNodes.size() : " Node " + this
-                        + ": " + getNeighbours().size() + " == " + sentNodes.size();
+                assert neighbours().size() == sentNodes.size() : " Node " + this
+                        + ": " + neighbours().size() + " == " + sentNodes.size();
             } else {
-                assert (parent == null) || (sentNodes.size() < getNeighbours().size());
+                assert (parent == null) || (sentNodes.size() < neighbours().size());
             }
         }
 

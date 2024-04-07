@@ -66,8 +66,8 @@ class FindLongestPathInBinaryTree_SolutionWithO1Cache {
             return nullNodeResultProvider.get();
         }
 
-        T leftResult = postOrderTraverse(node.getLeft(), nullNodeResultProvider, leftAndRightResultCombiner, resultConsumer);
-        T rightResult = postOrderTraverse(node.getRight(), nullNodeResultProvider, leftAndRightResultCombiner, resultConsumer);
+        T leftResult = postOrderTraverse(node.left(), nullNodeResultProvider, leftAndRightResultCombiner, resultConsumer);
+        T rightResult = postOrderTraverse(node.right(), nullNodeResultProvider, leftAndRightResultCombiner, resultConsumer);
 
         T combinedResult = leftAndRightResultCombiner.apply(leftResult, rightResult);
         resultConsumer.accept(node, combinedResult);

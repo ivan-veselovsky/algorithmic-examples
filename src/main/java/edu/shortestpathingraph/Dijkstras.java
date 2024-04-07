@@ -249,11 +249,11 @@ public class Dijkstras {
         };
         final NavigableSet<Node> nodesByDistance = new TreeSet<>(cmp);
 
-        Node startNode = graph.getNodes().get(graph.getStartVertex());
+        Node startNode = graph.nodes().get(graph.startVertex());
         startNode.distanceFromStart = 0; // start
         nodesByDistance.add(startNode); // enqueue Start node
-        if (graph.edges[graph.getStartVertex()] == null || graph.edges[graph.getStartVertex()].isEmpty()) {
-            return composeResult(graph.getNodes(), graph.startVertex, true);
+        if (graph.edges[graph.startVertex()] == null || graph.edges[graph.startVertex()].isEmpty()) {
+            return composeResult(graph.nodes(), graph.startVertex, true);
         }
 
         while (!nodesByDistance.isEmpty()) {
@@ -262,7 +262,7 @@ public class Dijkstras {
 
             Set<Edge> outgoingEdges = graph.edges[node.index];
             for (Edge edge: outgoingEdges) {
-                Node adjacentNode = graph.getNodes().get(edge.toNode);
+                Node adjacentNode = graph.nodes().get(edge.toNode);
                 int newDistance = node.distanceFromStart + edge.weight;
                 if (adjacentNode.canRelaxTo(newDistance)) {
                     boolean removed = nodesByDistance.remove(adjacentNode);
@@ -280,14 +280,14 @@ public class Dijkstras {
             }
         }
 
-        return composeResult(graph.getNodes(), graph.startVertex, false);
+        return composeResult(graph.nodes(), graph.startVertex, false);
     }
 
     private static void checkQueue(int maxEdgeWeight, SortedSet<Node> queue) {
         if (queue.size() > 1) {
             Node first = queue.first();
             Node last = queue.last();
-            int diff = last.getDistanceFromStart() - first.getDistanceFromStart();
+            int diff = last.distanceFromStart() - first.distanceFromStart();
             assert diff <= maxEdgeWeight;
         }
     }

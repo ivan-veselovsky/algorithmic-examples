@@ -150,11 +150,11 @@ public class TreeUtils {
             final Pair<Integer, Node> pair = deque.pollLast();
             final Node node = pair.getRight();
             final int oneBasedIndex = pair.getLeft();
-            if (node.getLeft() != null) {
-                deque.offerFirst(Pair.of(oneBasedIndex << 1, node.getLeft()));
+            if (node.left() != null) {
+                deque.offerFirst(Pair.of(oneBasedIndex << 1, node.left()));
             }
-            if (node.getRight() != null) {
-                deque.offerFirst(Pair.of((oneBasedIndex << 1) + 1, node.getRight()));
+            if (node.right() != null) {
+                deque.offerFirst(Pair.of((oneBasedIndex << 1) + 1, node.right()));
             }
             R result = processingFunction.apply(node, oneBasedIndex);
         }
