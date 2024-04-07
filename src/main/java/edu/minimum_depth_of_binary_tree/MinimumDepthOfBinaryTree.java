@@ -1,5 +1,7 @@
 package edu.minimum_depth_of_binary_tree;
 
+import edu.common.TreeNode;
+
 /**
  * Definition for a binary tree node.
  * public class TreeNode {
@@ -16,18 +18,6 @@ package edu.minimum_depth_of_binary_tree;
  * }
  */
 public class MinimumDepthOfBinaryTree {
-    static class TreeNode {
-      int val;
-      TreeNode left;
-      TreeNode right;
-      TreeNode() {}
-      TreeNode(int val) { this.val = val; }
-      TreeNode(int val, TreeNode left, TreeNode right) {
-          this.val = val;
-          this.left = left;
-          this.right = right;
-      }
-    }
     private int minDepth = Integer.MAX_VALUE;
 
     public int minDepth(TreeNode root) {
@@ -47,17 +37,17 @@ public class MinimumDepthOfBinaryTree {
         if (isLeaf(node)) {
             maybeUpdateMin(depth);
         } else {
-            if (node.left != null) {
-                dfsPreOrder(node.left, depth + 1);
+            if (node.left() != null) {
+                dfsPreOrder(node.left(), depth + 1);
             }
-            if (node.right != null) {
-                dfsPreOrder(node.right, depth + 1);
+            if (node.right() != null) {
+                dfsPreOrder(node.right(), depth + 1);
             }
         }
     }
 
     private boolean isLeaf(TreeNode node) {
-        return (node.left == null) && (node.right == null);
+        return (node.left() == null) && (node.right() == null);
     }
 
     private void maybeUpdateMin(int depth) {

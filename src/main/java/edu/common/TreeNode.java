@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @RequiredArgsConstructor
-@Getter()
+@Getter
 @Setter
 public class TreeNode {
     private final int val;
@@ -15,6 +15,11 @@ public class TreeNode {
         this.val = val;
         this.left = left;
         this.right = right;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + val + "]";
     }
 }
 

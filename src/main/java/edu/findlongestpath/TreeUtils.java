@@ -145,16 +145,16 @@ public class TreeUtils {
 
     public static <R> void traverseInBreadth(Node root, BiFunction<Node, Integer, R> processingFunction) {
         final Deque<Pair<Integer, Node>> deque = new LinkedList<>();
-        deque.offerFirst(Pair.of(1, root));
+        deque.offer(Pair.of(1, root));
         while (!deque.isEmpty()) {
-            final Pair<Integer, Node> pair = deque.pollLast();
+            final Pair<Integer, Node> pair = deque.poll();
             final Node node = pair.getRight();
             final int oneBasedIndex = pair.getLeft();
             if (node.left() != null) {
-                deque.offerFirst(Pair.of(oneBasedIndex << 1, node.left()));
+                deque.offer(Pair.of(oneBasedIndex << 1, node.left()));
             }
             if (node.right() != null) {
-                deque.offerFirst(Pair.of((oneBasedIndex << 1) + 1, node.right()));
+                deque.offer(Pair.of((oneBasedIndex << 1) + 1, node.right()));
             }
             R result = processingFunction.apply(node, oneBasedIndex);
         }

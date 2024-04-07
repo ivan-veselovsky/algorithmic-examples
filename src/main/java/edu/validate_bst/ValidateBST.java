@@ -1,5 +1,7 @@
 package edu.validate_bst;
 
+import edu.common.TreeNode;
+
 class ValidateBST {
     private int count = 0;
     private int previousValue;
@@ -10,14 +12,14 @@ class ValidateBST {
 
     boolean dfs(TreeNode node) {
         boolean result = true;
-        if (node.left != null) {
-            result = dfs(node.left);
+        if (node.left() != null) {
+            result = dfs(node.left());
         }
 
-        result = result && checkValue(node.val);
+        result = result && checkValue(node.val());
 
-        if (node.right != null) {
-            result = result && dfs(node.right);
+        if (node.right() != null) {
+            result = result && dfs(node.right());
         }
         return result;
     }
