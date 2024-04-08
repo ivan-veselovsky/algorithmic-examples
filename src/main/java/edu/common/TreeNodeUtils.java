@@ -40,6 +40,9 @@ public class TreeNodeUtils {
     }
 
     public static TreeNode buildTreeFromBFS(Integer[] nullFilledBFS) {
+        if (nullFilledBFS == null || nullFilledBFS.length == 0) {
+            return null;
+        }
         Preconditions.checkArgument(nullFilledBFS[0] != null);
 
         final TreeNode[] unlinkedNodeList = new TreeNode[nullFilledBFS.length];

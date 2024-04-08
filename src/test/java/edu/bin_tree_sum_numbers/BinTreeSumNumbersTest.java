@@ -10,6 +10,10 @@ class BinTreeSumNumbersTest {
 
     @Test
     void test1() {
+        System.out.println(Integer.toBinaryString(-1));
+        System.out.println(Integer.toBinaryString(-3));
+        System.out.println(Integer.toBinaryString(Integer.MIN_VALUE));
+        System.out.println(Integer.toBinaryString(Integer.MAX_VALUE));
         // [1,2,3]
         //Output: 25
         TreeNode root = buildTreeFromBFS(new Integer[] { 1,2,3 });
