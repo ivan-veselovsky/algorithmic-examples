@@ -1,5 +1,6 @@
 package edu.common;
 
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Deque;
@@ -36,6 +37,45 @@ public class TreeNodeUtils {
             result[p.getRight() - 1] = p.getLeft().val();
         });
         return result;
+    }
+
+    public static TreeNode buildTreeFromBFS(Integer[] nullFilledBFS) {
+        Preconditions.checkArgument(nullFilledBFS[0] != null);
+
+        final TreeNode[] unlinkedNodeList = new TreeNode[nullFilledBFS.length];
+        for (int i = 0; i < nullFilledBFS.length; i++) {
+            Integer val = nullFilledBFS[i];
+            if (val != null) {
+                unlinkedNodeList[i] = new TreeNode(val);
+            }
+        }
+
+        for (int i = 0; i < unlinkedNodeList.length; i++) {
+            final TreeNode node = unlinkedNodeList[i];
+            if (node != null ) {
+                int leftChildIndex = ((i + 1) << 1) - 1;
+                if (leftChildIndex < unlinkedNodeList.length) {
+                    TreeNode left = unlinkedNodeList[leftChildIndex];
+                    if (left != null) {
+                        node.left(left);
+                    }
+                } else {
+                    break;
+                }
+
+                int rightChildIndex = ((i + 1) << 1);
+                if (rightChildIndex < unlinkedNodeList.length) {
+                    TreeNode right = unlinkedNodeList[rightChildIndex];
+                    if (right != null) {
+                        node.right(right);
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+
+        return unlinkedNodeList[0];
     }
 
 }

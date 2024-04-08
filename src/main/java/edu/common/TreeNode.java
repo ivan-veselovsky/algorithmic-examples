@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 public class TreeNode {
     private final int val;
-    private TreeNode left;
-    private TreeNode right;
+    public TreeNode left;
+    public TreeNode right;
     public TreeNode(int val, TreeNode left, TreeNode right) {
         this.val = val;
         this.left = left;

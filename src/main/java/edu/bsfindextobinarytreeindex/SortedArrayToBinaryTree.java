@@ -12,11 +12,11 @@ public class SortedArrayToBinaryTree {
         return (double)arraySize * (1 + 2 * bsfOrderIndex) / denominator - arraySize - 1;
     }
 
-    static int powerOf2(int x) {
+    public static int powerOf2(int x) {
         return 1 << x;
     }
 
-    static int maxContainedPowerOf2(int x) {
+    public static int maxContainedPowerOf2(int x) {
         int cnt = -1;
         while (x != 0) {
             x >>>= 1;
