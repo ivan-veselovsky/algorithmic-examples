@@ -81,4 +81,16 @@ public class TreeNodeUtils {
         return unlinkedNodeList[0];
     }
 
+    public static int leftBfsChild(int bfsZeroBased) {
+        return ((bfsZeroBased + 1) << 1) - 1;
+    }
+
+    public static int rightBfsChild(int bfsZeroBased) {
+        return (bfsZeroBased + 1) << 1;
+    }
+
+    public static int bfsParent(int bfsZeroBased) {
+        return (bfsZeroBased + 1) / 2 - 1;
+    }
+
 }

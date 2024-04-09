@@ -22,7 +22,7 @@ public class CountNodesInQuasiFullTree {
 
         while (x + 1 < y) {
             int middlePath = (x + y) >> 1;
-            int depthMiddle = depth(root, middlePath, depthRight); // TODO: possible to take lower node, not root?
+            int depthMiddle = depth(root, middlePath, depthRight);
             if (depthLeft == depthMiddle) {
                 x = middlePath; // -->
             } else {
@@ -67,7 +67,7 @@ public class CountNodesInQuasiFullTree {
         }
     }
 
-    private int pow2(int pow) {
+    public static int pow2(int pow) {
         return (1 << pow);
     }
 
