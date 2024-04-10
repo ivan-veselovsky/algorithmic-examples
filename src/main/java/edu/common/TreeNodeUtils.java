@@ -93,4 +93,48 @@ public class TreeNodeUtils {
         return (bfsZeroBased + 1) / 2 - 1;
     }
 
+    // TODO: refactor to unite with buildTreeFromBFS()
+    public static Node buildTreeFromBFS_Node(Integer[] nullFilledBFS) {
+        if (nullFilledBFS == null || nullFilledBFS.length == 0) {
+            return null;
+        }
+        Preconditions.checkArgument(nullFilledBFS[0] != null);
+
+        final Node[] unlinkedNodeList = new Node[nullFilledBFS.length];
+        for (int i = 0; i < nullFilledBFS.length; i++) {
+            Integer val = nullFilledBFS[i];
+            if (val != null) {
+                unlinkedNodeList[i] = new Node(val);
+            }
+        }
+
+        for (int i = 0; i < unlinkedNodeList.length; i++) {
+            final Node node = unlinkedNodeList[i];
+            if (node != null ) {
+                int leftChildIndex = ((i + 1) << 1) - 1;
+                if (leftChildIndex < unlinkedNodeList.length) {
+                    Node left = unlinkedNodeList[leftChildIndex];
+                    if (left != null) {
+                        node.left = left;
+                    }
+                } else {
+                    break;
+                }
+
+                int rightChildIndex = ((i + 1) << 1);
+                if (rightChildIndex < unlinkedNodeList.length) {
+                    Node right = unlinkedNodeList[rightChildIndex];
+                    if (right != null) {
+                        node.right = right;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+
+        return unlinkedNodeList[0];
+    }
+
+
 }

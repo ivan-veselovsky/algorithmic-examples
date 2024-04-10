@@ -1,14 +1,14 @@
 package edu.isbalanced;
 
 import com.google.common.base.Preconditions;
-import edu.common.Node;
+import edu.common.NodeP;
 import lombok.val;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class IsBinaryTreeBalanced {
 
-    static boolean isBalanced(Node<Void> root) {
+    static boolean isBalanced(NodeP<Void> root) {
         val count = new AtomicInteger();
 
         TraverseResult<Integer> result = dfs(root, DfsKind.POST_ORDER, (node, leftSubtreeResult, rightSubtreeResult) -> {
@@ -32,7 +32,7 @@ public class IsBinaryTreeBalanced {
         PRE_ORDER, POST_ORDER, IN_ORDER;
     }
 
-    static <T> TraverseResult<T> dfs(Node<Void> node, DfsKind traverseKind, NodeLambda<T> lambda, final AtomicInteger count) {
+    static <T> TraverseResult<T> dfs(NodeP<Void> node, DfsKind traverseKind, NodeLambda<T> lambda, final AtomicInteger count) {
         return doTraverse(node, traverseKind, (n, r1, r2) -> {
             count.incrementAndGet();
             return lambda.process(n, r1, r2);
@@ -56,10 +56,10 @@ public class IsBinaryTreeBalanced {
 
     @FunctionalInterface
     interface NodeLambda<P> {
-        TraverseResult<P> process(Node<?> node, TraverseResult<P> prev1, TraverseResult<P> prev2);
+        TraverseResult<P> process(NodeP<?> node, TraverseResult<P> prev1, TraverseResult<P> prev2);
     }
 
-    private static <T> TraverseResult<T> doTraverse(Node<Void> node, DfsKind traverseKind, NodeLambda<T> lambda, TraverseResult<T> previousResult) {
+    private static <T> TraverseResult<T> doTraverse(NodeP<Void> node, DfsKind traverseKind, NodeLambda<T> lambda, TraverseResult<T> previousResult) {
         Preconditions.checkArgument(previousResult != null);
         if (node == null) {
             return lambda.process(null, previousResult, null);
