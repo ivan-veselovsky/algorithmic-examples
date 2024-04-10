@@ -1,0 +1,21 @@
+package edu.is_bin_tree_symmetric;
+
+import edu.common.TreeNode;
+import edu.common.TreeNodeUtils;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.BDDAssertions.then;
+
+class IsSymmetricRecursiveTest {
+    @Test
+    void isSymmetric() {
+        TreeNode root = TreeNodeUtils.buildTreeFromBFS(new Integer[] {
+                1,
+                2,2,
+                3,4, 4,3
+        });
+        boolean result = new IsSymmetricRecursive().isSymmetric(root);
+        then(result).isTrue();
+    }
+
+}
