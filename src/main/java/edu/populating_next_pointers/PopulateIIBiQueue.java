@@ -39,10 +39,10 @@ public class PopulateIIBiQueue {
             }
 
             if (node.left != null) {
-                inQueue.offer(node.left);
+                inQueue.offer(node.left());
             }
             if (node.right != null) {
-                inQueue.offer(node.right);
+                inQueue.offer(node.right());
             }
         }
     }

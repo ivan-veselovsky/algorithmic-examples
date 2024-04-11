@@ -10,18 +10,18 @@ import java.util.function.IntFunction;
 
 public class TreeNodeUtils {
 
-    public static void traverseInBreadth(TreeNode root, BiConsumer<TreeNode, Integer> consumer) {
-        final Deque<Pair<TreeNode, Integer>> deque = new LinkedList<>();
+    public static <T extends TreeNode> void traverseInBreadth(T root, BiConsumer<T, Integer> consumer) {
+        final Deque<Pair<T, Integer>> deque = new LinkedList<>();
         deque.offer(Pair.of(root, 1/*1-based*/));
         while (!deque.isEmpty()) {
-            final Pair<TreeNode, Integer> pair = deque.poll();
-            final TreeNode node = pair.getLeft();
+            final Pair<T, Integer> pair = deque.poll();
+            final T node = pair.getLeft();
             final int oneBasedBfsIndex = pair.getRight();
             if (node.left() != null) {
-                deque.offer(Pair.of(node.left(), oneBasedBfsIndex << 1));
+                deque.offer(Pair.of((T)node.left(), oneBasedBfsIndex << 1));
             }
             if (node.right() != null) {
-                deque.offer(Pair.of(node.right(), (oneBasedBfsIndex << 1) + 1));
+                deque.offer(Pair.of((T)node.right(), (oneBasedBfsIndex << 1) + 1));
             }
             consumer.accept(node, oneBasedBfsIndex);
         }
@@ -41,12 +41,6 @@ public class TreeNodeUtils {
             result[pair.getRight() - 1] = pair.getLeft().val();
         });
         return result;
-    }
-
-    /** NB: this is the format used in leetcode to check Node-class trees.
-     * Note that this format is not suitable to represent arbitrary tree of Node class! */
-    public static Integer[] asHashSeparatedNodeList() {
-        return null;
     }
 
     public static <T extends TreeNode> T buildTreeFromBFS0(Integer[] nullFilledBFS, IntFunction<T> creator) {
@@ -110,50 +104,6 @@ public class TreeNodeUtils {
 
     public static int zeroBasedLevel(int bfsIndex) {
         return MathUtils.maxContainedPowerOf2(bfsIndex);
-    }
-
-
-    // TODO: refactor to unite with buildTreeFromBFS()
-    public static Node buildTreeFromBFS_Node(Integer[] nullFilledBFS) {
-        if (nullFilledBFS == null || nullFilledBFS.length == 0) {
-            return null;
-        }
-        Preconditions.checkArgument(nullFilledBFS[0] != null);
-
-        final Node[] unlinkedNodeList = new Node[nullFilledBFS.length];
-        for (int i = 0; i < nullFilledBFS.length; i++) {
-            Integer val = nullFilledBFS[i];
-            if (val != null) {
-                unlinkedNodeList[i] = new Node(val);
-            }
-        }
-
-        for (int i = 0; i < unlinkedNodeList.length; i++) {
-            final Node node = unlinkedNodeList[i];
-            if (node != null ) {
-                int leftChildIndex = ((i + 1) << 1) - 1;
-                if (leftChildIndex < unlinkedNodeList.length) {
-                    Node left = unlinkedNodeList[leftChildIndex];
-                    if (left != null) {
-                        node.left = left;
-                    }
-                } else {
-                    break;
-                }
-
-                int rightChildIndex = ((i + 1) << 1);
-                if (rightChildIndex < unlinkedNodeList.length) {
-                    Node right = unlinkedNodeList[rightChildIndex];
-                    if (right != null) {
-                        node.right = right;
-                    }
-                } else {
-                    break;
-                }
-            }
-        }
-
-        return unlinkedNodeList[0];
     }
 
 }

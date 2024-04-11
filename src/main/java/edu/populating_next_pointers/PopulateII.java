@@ -25,10 +25,10 @@ public class PopulateII {
             node.next = queue.peek();
 
             if (node.left != null) {
-                queue.offer(node.left);
+                queue.offer(node.left());
             }
             if (node.right != null) {
-                queue.offer(node.right);
+                queue.offer(node.right());
             }
         }
 
@@ -46,7 +46,7 @@ public class PopulateII {
             node.next = null;
         }
 
-        invPreOrderDfs(node.right, depth + 1);
-        invPreOrderDfs(node.left, depth + 1);
+        invPreOrderDfs(node.right(), depth + 1);
+        invPreOrderDfs(node.left(), depth + 1);
     }
 }
