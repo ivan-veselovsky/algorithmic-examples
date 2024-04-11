@@ -67,8 +67,8 @@ public class ArrayQueueWithSeparator<T> {
             int realIndex = realIndex(virtualIndex);
             array2[virtualIndex] = array[realIndex];
         }
+        markedElementIndex = markedPosition(); // TODO: this fragment is poorly covered by tests.
         array = array2;
-        markedElementIndex = markedPosition();
         headInclusive = 0;
     }
 

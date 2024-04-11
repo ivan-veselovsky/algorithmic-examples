@@ -13,6 +13,16 @@ class ArrayQueueWithSeparatorTest {
     }
 
     @Test
+    void basic_dequeue_when_empty() {
+        ArrayQueueWithSeparator<Integer> queue = new ArrayQueueWithSeparator<>(1, Integer[]::new);
+        queue.enqueueTail(51);
+        then(queue.size()).isEqualTo(1);
+        then(queue.dequeueHead()).isEqualTo(51);
+        then(queue.dequeueHead()).isNull();
+        then(queue.size()).isEqualTo(0);
+    }
+
+    @Test
     void basic_storage_one_el() {
         ArrayQueueWithSeparator<Integer> queue = new ArrayQueueWithSeparator<>(1, Integer[]::new);
         queue.enqueueTail(51);
@@ -83,12 +93,14 @@ class ArrayQueueWithSeparatorTest {
 
     @Test
     void separator_1() {
-        ArrayQueueWithSeparator<String> queue = new ArrayQueueWithSeparator<>(2, String[]::new);
+        ArrayQueueWithSeparator<String> queue = new ArrayQueueWithSeparator<>(1, String[]::new);
         then(queue.size()).isEqualTo(0);
         then(queue.markedPosition()).isEqualTo(0);  // *          |
 
         queue.enqueueTail("a");
+        then(queue.markedPosition()).isEqualTo(0);  // a* b c      |abc
         queue.enqueueTail("b");
+        then(queue.markedPosition()).isEqualTo(0);  // a* b c      |abc
         queue.enqueueTail("c");
         then(queue.size()).isEqualTo(3);
         then(queue.markedPosition()).isEqualTo(0);  // a* b c      |abc
