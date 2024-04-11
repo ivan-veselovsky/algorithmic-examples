@@ -6,6 +6,8 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 public class PopulateII {
+    private int maxVisitedDepth;
+
     public Node connect(Node root) {
         if (root != null) {
             bfs(root);
@@ -13,40 +15,38 @@ public class PopulateII {
         return root;
     }
 
-    record Wrap(Node node, long bfsIndex) {}
-
     private void bfs(Node root) {
-        final Deque<Wrap> queue = new LinkedList<>();
-        queue.offer(new Wrap(root, 1L));
+        final Deque<Node> queue = new LinkedList<>();
+        queue.offer(root);
 
         while (!queue.isEmpty()) {
-            Wrap wrap = queue.poll();
-            Node node = wrap.node();
+            Node node = queue.poll();
 
-            Wrap nextWrap = queue.peek();
-            if (nextWrap != null) {
-                long firstIndexOnTheNextLevel = 1L << (zeroBasedLevel(wrap.bfsIndex()) + 1);
-                if (nextWrap.bfsIndex() < firstIndexOnTheNextLevel) {
-                    Node nextNode = nextWrap.node();
-                    node.next = nextNode;
-                }
-            }
+            node.next = queue.peek();
 
             if (node.left != null) {
-                queue.offer(new Wrap(node.left, wrap.bfsIndex() << 1));
+                queue.offer(node.left);
             }
             if (node.right != null) {
-                queue.offer(new Wrap(node.right, (wrap.bfsIndex() << 1) + 1));
+                queue.offer(node.right);
             }
         }
+
+        maxVisitedDepth = 0;
+        invPreOrderDfs(root, 0);
     }
 
-    int zeroBasedLevel(long x) {
-        int cnt = -1;
-        while (x != 0) {
-            x >>>= 1;
-            cnt++;
+    private void invPreOrderDfs(Node node, int depth) {
+        if (node == null) {
+            return;
         }
-        return cnt;
+        if (depth > maxVisitedDepth) { // first node on this depth
+            assert depth == maxVisitedDepth + 1;
+            maxVisitedDepth = depth;
+            node.next = null;
+        }
+
+        invPreOrderDfs(node.right, depth + 1);
+        invPreOrderDfs(node.left, depth + 1);
     }
 }

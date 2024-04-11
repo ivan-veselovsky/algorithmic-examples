@@ -18,4 +18,9 @@ public class Node {
         right = _right;
         next = _next;
     }
-};
+
+    @Override
+    public String toString() {
+        return val + "->" + ((next == null) ? "null" : next.val);
+    }
+}
