@@ -3,12 +3,9 @@ package edu.populating_next_pointers;
 import edu.common.Node;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 import static edu.common.NodeUtils.asHashSeparatedNodeList;
 import static edu.common.NodeUtils.buildTreeFromBFS_Node;
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.junit.jupiter.api.Assertions.*;
 
 class PopulateII_ArrayQueueWithMarkedPositionTest {
 

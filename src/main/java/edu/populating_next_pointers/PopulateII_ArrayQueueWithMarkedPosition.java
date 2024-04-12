@@ -1,7 +1,7 @@
 package edu.populating_next_pointers;
 
-import edu.common.ArrayQueueWithSeparator;
 import edu.common.Node;
+import edu.common.RedBallArrayDeque;
 
 public class PopulateII_ArrayQueueWithMarkedPosition {
 
@@ -13,24 +13,24 @@ public class PopulateII_ArrayQueueWithMarkedPosition {
     }
 
     private void bfs(Node root) {
-        ArrayQueueWithSeparator<Node> queue = new ArrayQueueWithSeparator<>(64, Node[]::new);
-        queue.enqueueTail(root);
+        RedBallArrayDeque<Node> queue = new RedBallArrayDeque<>(32);
+        queue.enqueue(root);
 
         while (true) {
-            Node node = queue.dequeueHead();
+            Node node = queue.dequeue();
             if (node == null) {
                 break;
             }
 
-            if (queue.markedPosition() != 0) {
+            if (queue.getRedBallPosition() > 0) {
                 node.next = queue.peek();
             }
 
             if (node.left != null) {
-                queue.enqueueTail(node.left());
+                queue.enqueue(node.left());
             }
             if (node.right != null) {
-                queue.enqueueTail(node.right());
+                queue.enqueue(node.right());
             }
         }
     }
