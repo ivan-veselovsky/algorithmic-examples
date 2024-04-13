@@ -24,6 +24,14 @@ class TreeNodeUtilsTest {
     }
 
     @Test
+    void orphan_1() {
+        Integer[] tree = new Integer[] { 1,2,3, 4, null, null, 7, 8, null, null, null, 51, 52 };
+        thenThrownBy( () -> buildTreeFromBFS(tree))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Orphan");
+    }
+
+    @Test
     void test2() {
         Integer[] tree = new Integer[] { 3, 5,1, null,2,0,null,  null,null, 7, 4, 19 };
         TreeNode root = buildTreeFromBFS(tree);

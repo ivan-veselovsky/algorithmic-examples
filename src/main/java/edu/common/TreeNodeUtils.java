@@ -3,7 +3,7 @@ package edu.common;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Arrays;
+import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.function.BiConsumer;
@@ -44,6 +44,9 @@ public class TreeNodeUtils {
         return result;
     }
 
+    record NodeWithBfsIndex(TreeNode node, int index) {
+    }
+
     public static <T extends TreeNode> T buildTreeFromBFS0(final Integer[] nullFilledBFS, final IntFunction<T> creator) {
         if (nullFilledBFS == null || nullFilledBFS.length == 0) {
             return null;
@@ -51,53 +54,46 @@ public class TreeNodeUtils {
         Preconditions.checkArgument(nullFilledBFS[0] != null, "Null root element.");
         Preconditions.checkArgument(nullFilledBFS[nullFilledBFS.length - 1] != null, "Trailing null at index " + (nullFilledBFS.length - 1));
 
-        final TreeNode[] unlinkedNodeList = new TreeNode[nullFilledBFS.length];
-        unlinkedNodeList[0] = creator.apply(nullFilledBFS[0]); // root
+        final Deque<NodeWithBfsIndex> queue = new ArrayDeque<>();
+        final TreeNode root = creator.apply(nullFilledBFS[0]);
+        queue.offer(new NodeWithBfsIndex(root, 0)); // root
 
-        int lastProcessedIndex = 0;
         for (int i = 0; i<nullFilledBFS.length; i++) {
             final Integer value = nullFilledBFS[i];
             if (value != null) {
-                final TreeNode node = unlinkedNodeList[i];
-                int parentIndex = ((i + 1) >> 1) - 1;
-                Preconditions.checkArgument(node != null,
+                final NodeWithBfsIndex nodeWithIndex = queue.poll();
+                final int parentIndex = ((i + 1) >> 1) - 1;
+                Preconditions.checkArgument(nodeWithIndex != null
+                                && nodeWithIndex.index() == i,
                       "Orphan node detected at index " + i + ", val = "
                               + value + ", parent index = " + parentIndex);
 
-                int leftChildIndex = ((i + 1) << 1) - 1;
+                final TreeNode node = nodeWithIndex.node();
+                assert node.val() == value;
+
+                final int leftChildIndex = ((i + 1) << 1) - 1;
                 if (leftChildIndex < nullFilledBFS.length) {
                     Integer val = nullFilledBFS[leftChildIndex];
                     if (val != null) {
                         TreeNode left = creator.apply(val);
-                        unlinkedNodeList[leftChildIndex] = left;
+                        queue.offer(new NodeWithBfsIndex(left, leftChildIndex));
                         node.left(left);
                     }
-                    lastProcessedIndex = leftChildIndex;
-                } else {
-                    //break;
                 }
 
-                int rightChildIndex = leftChildIndex + 1;
+                final int rightChildIndex = leftChildIndex + 1;
                 if (rightChildIndex < nullFilledBFS.length) {
                     Integer val = nullFilledBFS[rightChildIndex];
                     if (val != null) {
                         TreeNode right = creator.apply(val);
-                        unlinkedNodeList[rightChildIndex] = right;
+                        queue.offer(new NodeWithBfsIndex(right, rightChildIndex));
                         node.right(right);
                     }
-                    lastProcessedIndex = rightChildIndex;
-                } else {
-                    //break;
                 }
             }
         }
 
-        int unconsumedElementCount = nullFilledBFS.length - 1 - lastProcessedIndex;
-        Preconditions.checkArgument(unconsumedElementCount == 0,
-                unconsumedElementCount + " values are not consumed: "
-                        + Arrays.toString(Arrays.copyOfRange(nullFilledBFS, lastProcessedIndex + 1, nullFilledBFS.length)));
-
-        return (T)unlinkedNodeList[0];
+        return (T)root;
     }
 
     public static TreeNode buildTreeFromBFS(Integer[] nullFilledBFS) {
