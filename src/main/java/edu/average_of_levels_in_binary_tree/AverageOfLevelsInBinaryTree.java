@@ -8,6 +8,9 @@ import java.util.List;
 
 public class AverageOfLevelsInBinaryTree  {
     public List<Double> averageOfLevels(TreeNode root) {
+        if (root == null) {
+            return List.of();
+        }
         final RedBallQueue<TreeNode> queue = new RedBallQueue<>(32);
         queue.enqueue(root);
         final List<Double> result = new ArrayList<>();
