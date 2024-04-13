@@ -10,6 +10,9 @@ public class RedBallQueue<T> {
     public RedBallQueue(int initialCapacity) {
         deque = new ArrayDeque<>(initialCapacity);
     }
+    public RedBallQueue(Deque<T> deque) {
+        this.deque = deque;
+    }
 
     public void enqueue(T t) {
         deque.offer(t); // does not change the red ball position
@@ -43,5 +46,9 @@ public class RedBallQueue<T> {
 
     public boolean isEmpty() {
         return deque.isEmpty();
+    }
+
+    public Deque<T> getDeque() {
+        return deque;
     }
 }
