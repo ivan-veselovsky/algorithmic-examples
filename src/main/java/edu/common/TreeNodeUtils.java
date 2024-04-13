@@ -48,14 +48,14 @@ public class TreeNodeUtils {
         if (nullFilledBFS == null || nullFilledBFS.length == 0) {
             return null;
         }
-        Preconditions.checkArgument(nullFilledBFS[0] != null, "root element must not be null.");
-        Preconditions.checkArgument(nullFilledBFS[nullFilledBFS.length - 1] != null, "Trailing zero at index " + (nullFilledBFS.length - 1));
+        Preconditions.checkArgument(nullFilledBFS[0] != null, "Null root element.");
+        Preconditions.checkArgument(nullFilledBFS[nullFilledBFS.length - 1] != null, "Trailing null at index " + (nullFilledBFS.length - 1));
 
         final TreeNode[] unlinkedNodeList = new TreeNode[nullFilledBFS.length];
         unlinkedNodeList[0] = creator.apply(nullFilledBFS[0]); // root
 
         int lastProcessedIndex = 0;
-        for (int i = 0; ; i++) {
+        for (int i = 0; i<nullFilledBFS.length; i++) {
             final Integer value = nullFilledBFS[i];
             if (value != null) {
                 final TreeNode node = unlinkedNodeList[i];
@@ -65,7 +65,7 @@ public class TreeNodeUtils {
                               + value + ", parent index = " + parentIndex);
 
                 int leftChildIndex = ((i + 1) << 1) - 1;
-                if (leftChildIndex < unlinkedNodeList.length) {
+                if (leftChildIndex < nullFilledBFS.length) {
                     Integer val = nullFilledBFS[leftChildIndex];
                     if (val != null) {
                         TreeNode left = creator.apply(val);
@@ -74,11 +74,11 @@ public class TreeNodeUtils {
                     }
                     lastProcessedIndex = leftChildIndex;
                 } else {
-                    break;
+                    //break;
                 }
 
                 int rightChildIndex = leftChildIndex + 1;
-                if (rightChildIndex < unlinkedNodeList.length) {
+                if (rightChildIndex < nullFilledBFS.length) {
                     Integer val = nullFilledBFS[rightChildIndex];
                     if (val != null) {
                         TreeNode right = creator.apply(val);
@@ -87,7 +87,7 @@ public class TreeNodeUtils {
                     }
                     lastProcessedIndex = rightChildIndex;
                 } else {
-                    break;
+                    //break;
                 }
             }
         }
