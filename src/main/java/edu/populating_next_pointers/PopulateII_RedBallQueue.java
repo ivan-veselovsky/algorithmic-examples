@@ -1,9 +1,9 @@
 package edu.populating_next_pointers;
 
 import edu.common.Node;
-import edu.common.RedBallArrayDeque;
+import edu.common.RedBallQueue;
 
-public class PopulateII_ArrayQueueWithMarkedPosition {
+public class PopulateII_RedBallQueue {
 
     public Node connect(Node root) {
         if (root != null) {
@@ -13,17 +13,14 @@ public class PopulateII_ArrayQueueWithMarkedPosition {
     }
 
     private void bfs(Node root) {
-        RedBallArrayDeque<Node> queue = new RedBallArrayDeque<>(32);
+        RedBallQueue<Node> queue = new RedBallQueue<>(32);
         queue.enqueue(root);
 
-        while (true) {
+        while (!queue.isEmpty()) {
             Node node = queue.dequeue();
-            if (node == null) {
-                break;
-            }
 
-            if (queue.getRedBallPosition() > 0) {
-                node.next = queue.peek();
+            if (queue.redBallPosition() > 0) {
+                node.next = queue.peek(); // link all except the last
             }
 
             if (node.left != null) {
@@ -34,5 +31,4 @@ public class PopulateII_ArrayQueueWithMarkedPosition {
             }
         }
     }
-
 }

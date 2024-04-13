@@ -1,6 +1,6 @@
 package edu.average_of_levels_in_binary_tree;
 
-import edu.common.RedBallArrayDeque;
+import edu.common.RedBallQueue;
 import edu.common.TreeNode;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.List;
 
 public class AverageOfLevelsInBinaryTree  {
     public List<Double> averageOfLevels(TreeNode root) {
-        final RedBallArrayDeque<TreeNode> queue = new RedBallArrayDeque<>(32);
+        final RedBallQueue<TreeNode> queue = new RedBallQueue<>(32);
         queue.enqueue(root);
         final List<Double> result = new ArrayList<>();
         final Accumulator accumulator = new Accumulator();
@@ -17,7 +17,7 @@ public class AverageOfLevelsInBinaryTree  {
 
             accumulator.add(node.val());
 
-            if (queue.getRedBallPosition() == 0) { // level processing finished:
+            if (queue.redBallPosition() == 0) { // level processing finished:
                 result.add(accumulator.getAverage());
                 accumulator.reset();
             }
@@ -33,8 +33,8 @@ public class AverageOfLevelsInBinaryTree  {
     }
 
     static class Accumulator {
-        long sum;
-        int count;
+        private long sum;
+        private int count;
         void add(int value) {
             sum += value;
             count++;
@@ -45,9 +45,6 @@ public class AverageOfLevelsInBinaryTree  {
         }
         double getAverage() {
             return ((double)sum) / count;
-        }
-        int count() {
-            return count;
         }
     }
 }

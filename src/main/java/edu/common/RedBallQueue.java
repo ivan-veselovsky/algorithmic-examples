@@ -3,11 +3,11 @@ package edu.common;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-public class RedBallArrayDeque<T> {
+public class RedBallQueue<T> {
     private final Deque<T> deque;
     private int redBallPosition; // virtual "Red Ball"
 
-    public RedBallArrayDeque(int initialCapacity) {
+    public RedBallQueue(int initialCapacity) {
         deque = new ArrayDeque<>(initialCapacity);
     }
 
@@ -15,16 +15,21 @@ public class RedBallArrayDeque<T> {
         deque.offer(t); // does not change the red ball position
     }
 
-    public T dequeue() {
-        T t = deque.poll();
-        redBallPosition--;
-        if (redBallPosition < 0) { // red ball is in the head, => move it to the queue tail
-            redBallPosition = deque.size(); // behind the last
+    protected T doDequeue() {
+        return deque.poll();
+    }
+
+    public final T dequeue() {
+        T t = doDequeue();
+        if (redBallPosition == 0) { // red ball is in the head, => move it to the queue tail
+            redBallPosition = size(); // behind the last, maybe 0 again
+        } else {
+            redBallPosition--;
         }
         return t;
     }
 
-    public int getRedBallPosition() {
+    public final int redBallPosition() {
         return redBallPosition;
     }
 

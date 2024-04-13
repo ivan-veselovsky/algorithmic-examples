@@ -3,16 +3,15 @@ package edu.common;
 import java.util.Objects;
 import java.util.function.IntFunction;
 
-// Same as java.util.ArrayDeque (Java 21), but smaller and has "separator" feature;
-public class ArrayQueueWithSeparator<T> {
+// Same as java.util.ArrayDeque (Java 21), written just for training.
+public class MyArrayQueue<T> {
 
     private T[] array;
     private final IntFunction<T[]> arrayCreator;
     private int headInclusive; // position of the 1st
     private int size; // number of elements in the Queue
-    private int markedElementIndex;
 
-    public ArrayQueueWithSeparator(int initialArrayLength, IntFunction<T[]> arrayCreator) {
+    public MyArrayQueue(int initialArrayLength, IntFunction<T[]> arrayCreator) {
         this.arrayCreator = Objects.requireNonNull(arrayCreator);
         this.array = arrayCreator.apply(initialArrayLength);
     }
@@ -39,9 +38,6 @@ public class ArrayQueueWithSeparator<T> {
         if (isEmpty()) {
             return null;
         }
-        if (markedElementIndex == headInclusive) {
-            markedElementIndex = (headInclusive + size) % array.length;
-        }
         T value = array[headInclusive];
         headInclusive = (headInclusive + 1) % array.length;
         size--;
@@ -67,17 +63,8 @@ public class ArrayQueueWithSeparator<T> {
             int realIndex = realIndex(virtualIndex);
             array2[virtualIndex] = array[realIndex];
         }
-        markedElementIndex = markedPosition(); // TODO: this fragment is poorly covered by tests.
         array = array2;
         headInclusive = 0;
-    }
-
-    private int virtualIndex(int realIndex) {
-        int virtualIndex = realIndex - headInclusive;
-        if (virtualIndex < 0) {
-            virtualIndex += array.length;
-        }
-        return virtualIndex;
     }
 
     private int realIndex(int virtualIndex) {
@@ -89,15 +76,5 @@ public class ArrayQueueWithSeparator<T> {
         assert real >= 0;
         assert real < array.length;
         return real;
-    }
-
-    /**
-     * Virtual separator position for external user.
-     */
-    public int markedPosition() {
-        int separatorVirtual = virtualIndex(markedElementIndex);
-        assert separatorVirtual >= 0;
-        assert separatorVirtual <= size : "size = " + size + ", separatorVirtual = " + separatorVirtual;
-        return separatorVirtual;
     }
 }

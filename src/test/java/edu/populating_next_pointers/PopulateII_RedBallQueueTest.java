@@ -7,14 +7,14 @@ import static edu.common.NodeUtils.asHashSeparatedNodeList;
 import static edu.common.NodeUtils.buildTreeFromBFS_Node;
 import static org.assertj.core.api.BDDAssertions.then;
 
-class PopulateII_ArrayQueueWithMarkedPositionTest {
+class PopulateII_RedBallQueueTest {
 
     @Test
     void connect() {
         Node root = buildTreeFromBFS_Node(new Integer[] { 1,2,3,4,5,null,7,
                 null, null, 10, null, null, null, 14 });
 
-        new PopulateII_ArrayQueueWithMarkedPosition().connect(root);
+        new PopulateII_RedBallQueue().connect(root);
 
         Integer[] list = asHashSeparatedNodeList(root);
         then(list).containsExactly(1,null,
@@ -33,7 +33,7 @@ class PopulateII_ArrayQueueWithMarkedPositionTest {
                 null,8,2,null,null,null,null,null,null,null,8,null,null,null,null,null,null,null,null,null,null,2,null,null,null,2,5,null,null,null,null,null,null,null,null,
                 null,null,null,2,null,null,null,null,null,8,null,null,null,null,null,null,null,null,null,null,0,5 });
 
-        new PopulateII_ArrayQueueWithMarkedPosition().connect(root);
+        new PopulateII_RedBallQueue().connect(root);
 
         Integer[] list = asHashSeparatedNodeList(root);
         then(list).containsExactly(1, null, 5, 8, null, 9, 7, 7, 8, null, 1, 4, 8, 1, 9, 0, 8, 7, null, 1, 7, 4, 2, 9, 8, 2, 4, 9, 6, 0, null, 9, 4, 1, 0, 1, 8, 9, 0, 1, 8, 9, 1, 0, 9, 6, 2, 0, 2, 0, 9, 4, 9, null, 1, 0, 7, 2, 2, 3, 6, 1, 0, 8, 9, 9, 9, 4, 8, 4, 3, 4, 4, 0, 8, 3, 8, 0, 0, 4, 3, 5, 5, 7, 7, 0, 2, 5, 5, null, 9, 3, 7, 6, 6, 7, 9, 8, 1, 7, 7, 7, 7, 4, 6, 4, 6, 9, 1, 5, 5, 5, 4, 2, 2, 8, 5, 1, 1, 3, 1, 3, 7, 1, 4, 4, 7, 7, 7, 3, 1, 8, 5, 8, 1, 8, 9, 0, 4, 8, null, 2, 4, 8, 6, 1, 6, 7, 3, 8, 6, 4, 7, 0, 0, 7, 2, 3, 3, 0, 1, 5, 8, 2, 6, 3, 2, 0, 4, 0, 9, 1, 1, 1, 1, 3, 7, 9, 1, 3, 3, 8, 9, 8, 1, 3, 8, 3, 0, 6, 0, 0, 9, 0, 0, 3, 6, 6, 4, 5, 6, 7, 9, 1, 0, 5, 1, 7, null, 5, 0, 7, 5, 4, 9, 2, 1, 6, 4, 0, 0, 1, 9, 2, 7, 3, 8, 6, 9, 5, 8, 6, 6, 0, 2, 3, 5, 4, 2, 2, 5, 8, 8, 3, 0, 1, 6, 0, 6, 8, 2, 5, 6, 4, 2, 0, 1, 0, 6, 6, 4, 4, 6, 3, 5, 1, 2, 5, 0, 7, 6, 6, 9, 9, 7, 7, 6, 3, 4, 6, 9, 9, 4, 3, 4, 8, 4, 5, null, 0, 0, 9, 7, 8, 3, 3, 1, 1, 4, 9, 0, 8, 2, 8, 3, 5, 4, 7, 3, 1, 2, 4, 4, 4, 7, 6, 1, 7, 3, 3, 3, 0, 9, 6, 8, 3, 1, 1, 5, 0, 5, 1, 2, 9, 1, 8, 6, 4, 1, 9, 2, 1, 1, 5, 7, 8, 6, 0, 8, 9, 6, 9, 9, 6, 5, 2, 7, null, 2, null
