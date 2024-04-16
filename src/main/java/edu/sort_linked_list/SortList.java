@@ -9,11 +9,15 @@ public class SortList {
 
     public ListNode sortList(final ListNode head) {
         ListNode list = head;
-        final int totalLength = size(list);
+        int totalLength = -1;
         //System.out.println(" before merging groups : list1 = " + toStringList(list));
         int groupSize = 1;
         do {
-            list = mergeAllGroupPairs(groupSize, list, totalLength);
+            AppendableList aList = mergeAllGroupPairs(groupSize, list);
+            if (totalLength < 0) {
+                totalLength = aList.size();
+            }
+            list = aList.beginning();
             //System.out.println(" after  merging groups " + groupSize + ": " + toStringList(list));
             assert size(list) == totalLength : size(list);
             groupSize <<= 1;
@@ -21,7 +25,7 @@ public class SortList {
         return list;
     }
 
-    ListNode mergeAllGroupPairs(final int groupSize, final ListNode start, int totalLength) {
+    AppendableList mergeAllGroupPairs(final int groupSize, final ListNode start) {
         ListNode x = start;
         final AppendableList accumulator = new AppendableList(null);
         while (true) {
@@ -34,7 +38,7 @@ public class SortList {
             }
             x = z;
         }
-        return accumulator.beginning();
+        return accumulator;
     }
 
     void mergeTwoLists(final AppendableList accumulator, ListNode x, ListNode y) {
