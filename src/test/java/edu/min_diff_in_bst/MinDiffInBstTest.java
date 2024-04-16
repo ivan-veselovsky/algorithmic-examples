@@ -18,7 +18,7 @@ class MinDiffInBstTest {
 
     @Test
     void getMinimumDifference2() {
-        TreeNode tree = TreeNodeUtils.buildTreeFromBFS(new Integer[] { 1,0,48,null,null,12,49 });
+        TreeNode tree = TreeNodeUtils.buildTreeFromBFS(new Integer[] { 1,0,48, null, null,12,49 });
         int minDiff = new MinDiffInBst().getMinimumDifference(tree);
         then(minDiff).isEqualTo(1);
     }

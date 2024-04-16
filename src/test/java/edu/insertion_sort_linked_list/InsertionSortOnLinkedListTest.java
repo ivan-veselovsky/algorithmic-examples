@@ -1,5 +1,6 @@
 package edu.insertion_sort_linked_list;
 
+import edu.common.ListNode;
 import org.junit.jupiter.api.Test;
 
 import edu.insertion_sort_linked_list.InsertionSortOnLinkedList.*;
@@ -52,7 +53,7 @@ class InsertionSortOnLinkedListTest {
         List<ListNode> list = new LinkedList<>();
         while (x != null) {
             list.add(x);
-            x = x.next;
+            x = x.next();
         }
         return List.copyOf(list);
     }

@@ -1,18 +1,8 @@
 package edu.insertion_sort_linked_list;
 
-public class InsertionSortOnLinkedList {
-      static class ListNode {
-          int val;
-          ListNode next;
-          ListNode() {}
-          ListNode(int val) { this.val = val; }
-          ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+import edu.common.ListNode;
 
-          @Override
-          public String toString() {
-              return "[" + val + "]";
-          }
-      }
+public class InsertionSortOnLinkedList {
 
     static class Solution {
         private ListNode head;
@@ -23,10 +13,10 @@ public class InsertionSortOnLinkedList {
             ListNode lastSorted = head; // and of the sorted part, it has the maximum value among all processed.
 
             while (true) {
-                if (lastSorted.next == null) {
+                if (lastSorted.next() == null) {
                     return head; // we're done
-                } else if (lastSorted.next.val >= lastSorted.val) {
-                    lastSorted = lastSorted.next; // shortcut
+                } else if (lastSorted.next().val() >= lastSorted.val()) {
+                    lastSorted = lastSorted.next(); // shortcut
                 } else {
                     // cut and insert somewhere inside the sorted part:
                     ListNode victim = cutNodeAfter(lastSorted);
@@ -36,9 +26,9 @@ public class InsertionSortOnLinkedList {
         }
 
         ListNode cutNodeAfter(ListNode x) {
-            ListNode victim = x.next;
-            x.next = victim.next;
-            victim.next = null;
+            ListNode victim = x.next();
+            x.next(victim.next());
+            victim.next(null);
             return victim;
         }
 
@@ -46,19 +36,19 @@ public class InsertionSortOnLinkedList {
             ListNode predecessor = null;
             ListNode x = head;
             while (true) {
-                if (candidate.val <= x.val) {
+                if (candidate.val() <= x.val()) {
                     // insert candidate after predecessor and before x:
                     if (predecessor == null) {
                         head = candidate;
                     } else {
-                        assert predecessor.next == x;
-                        predecessor.next = candidate;
+                        assert predecessor.next() == x;
+                        predecessor.next(candidate);
                     }
-                    candidate.next = x;
+                    candidate.next(x);
                     return;
                 }
                 predecessor = x;
-                x = x.next;
+                x = x.next();
                 assert x != null; // this case should be considered separately.
             }
         }
