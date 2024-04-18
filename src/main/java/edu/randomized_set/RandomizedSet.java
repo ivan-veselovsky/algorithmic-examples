@@ -5,7 +5,7 @@ import java.util.Random;
 
 class RandomizedSet {
     private int size;
-    private int[] vector = new int[8];
+    private int[] vector = new int[16];
     private final HashMap<Integer, Integer> valuesToPositions = new HashMap<>(16);
     private final Random random = new Random(12345L);
 
@@ -19,7 +19,8 @@ class RandomizedSet {
     }
 
     public boolean insert(final int val) {
-        if (valuesToPositions.containsKey(val)) {
+        Integer old = valuesToPositions.putIfAbsent(val, size);
+        if (old != null) {
             return false;
         }
         if (size == vector.length) {
@@ -27,14 +28,12 @@ class RandomizedSet {
         }
         assert size < vector.length;
         vector[size] = val;
-        Integer pushed = valuesToPositions.put(val, size);
-        assert pushed == null;
         size++;
         return true;
     }
 
     public boolean remove(int val) {
-        Integer pos = valuesToPositions.remove(val);
+        final Integer pos = valuesToPositions.remove(val);
         if (pos == null) {
             return false;
         } else {
