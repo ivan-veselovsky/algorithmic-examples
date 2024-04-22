@@ -1,8 +1,7 @@
 package edu.sum_3;
 
 import java.util.*;
-
-import static edu.sum_3.Sum3B.Range.lengthInclusive;
+import java.util.function.IntUnaryOperator;
 
 public class Sum3B {
     private int[] weights;
@@ -20,7 +19,7 @@ public class Sum3B {
         Range range = Range.full(weights);
         while (range != null) {
             Range range2 = computeAllTriplesOfRange(range);
-            System.out.println("Range: " + range + " -> " + range2);
+            //System.out.println("Range: " + range + " -> " + range2);
             range = range2;
         }
 
@@ -34,17 +33,26 @@ public class Sum3B {
      */
     Range computeAllTriplesOfRange(final Range range0) {
         Range xToZRange = range0;
+        if (range0.length() < 3) {
+            return null;
+        }
         Range searchY = xToZRange.shrinkLeftAndRight();
         if (searchY.isEmpty()) {
             return null;
         }
+        int loopCount = 0;
         while (true) {
+            loopCount++;
             int key_y = key(xToZRange);
             HalfIndexAndCount index_of_key_y = stableBinarySearch(weights, searchY, key_y);
             if (index_of_key_y.isLessThan(searchY.first())) {
-                return range0.shrinkRight();
+                break;
             } else if (index_of_key_y.isGreaterThan(searchY.last())) {
-                return range0.shrinkLeft();
+                if (loopCount == 1) {
+                    return range0.shrinkLeftAll(q -> weights[q]);
+                } else {
+                    break;
+                }
             } else {
                 // we're in the "between" range:
                 assert searchY.contains(index_of_key_y.leftmostKeyIndex());
@@ -62,14 +70,17 @@ public class Sum3B {
                 xToZRange = xToZRange.shrinkLeft(); // x++
 
                 int newX = xToZRange.first() + 1;
-                if (lengthInclusive(newX, newY) < 1) {
-                    return range0.shrinkRight();  // decrease "z"
+                if (Range.lengthInclusive(newX, newY) < 1) {
+                    break;
                 } else {
                     searchY = Range.ofInclusive(newX, newY);
                 }
                 assert !searchY.isEmpty();
             }
         }
+
+        // common exit point -- shift z to the left:
+        return range0.shrinkRightAll(q -> weights[q]);
     }
 
     int key(Range r) {
@@ -90,6 +101,7 @@ public class Sum3B {
         int length() {
             return lastExclusive - first;
         }
+        /** inclusive */
         int last() {
             return lastExclusive - 1;
         }
@@ -108,9 +120,39 @@ public class Sum3B {
             assert r.length() + 1 == length();
             return r;
         }
+        Range shrinkLeftAll(IntUnaryOperator f) {
+            if (isEmpty()) {
+                return this;
+            }
+            final int firstV = f.applyAsInt(first);
+            int removeCount = 1;
+            for (int i=first + 1; i < lastExclusive; i++) {
+                if (f.applyAsInt(i) == firstV) {
+                    removeCount++;
+                }
+            }
+            Range r = Range.of(first + removeCount, lastExclusive);
+            assert r.length() + removeCount == length();
+            return r;
+        }
         Range shrinkRight() {
             Range r = new Range(first, lastExclusive - 1);
             assert r.length() + 1 == length();
+            return r;
+        }
+        Range shrinkRightAll(IntUnaryOperator f) {
+            if (isEmpty()) {
+                return this;
+            }
+            final int lastV = f.applyAsInt(lastExclusive - 1);
+            int removeCount = 1;
+            for (int i=lastExclusive - 2; i >= first; i--) {
+                if (f.applyAsInt(i) == lastV) {
+                    removeCount++;
+                }
+            }
+            Range r = Range.of(first, lastExclusive - removeCount);
+            assert r.length() + removeCount == length();
             return r;
         }
         Range shrinkLeftAndRight() {
@@ -217,8 +259,8 @@ public class Sum3B {
         assert z != x : z + " != " + x;
         assert weights[x] + weights[y] + weights[z] == 0;
         int[] arr = new int[] {x, y, z};
-        System.out.println("collected: idx=" + Arrays.toString(arr)
-                + " = (" + weights[x] + ", " +  weights[y] + ", " + weights[z] + ")");
+//        System.out.println("collected: idx=" + Arrays.toString(arr)
+//                + " = (" + weights[x] + ", " +  weights[y] + ", " + weights[z] + ")");
         threeIndexList.add(arr);
     }
 
