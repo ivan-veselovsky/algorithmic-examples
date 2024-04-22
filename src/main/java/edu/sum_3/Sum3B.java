@@ -2,6 +2,8 @@ package edu.sum_3;
 
 import java.util.*;
 
+import static edu.sum_3.Sum3B.Range.lengthInclusive;
+
 public class Sum3B {
     private int[] weights;
     private final List<int[]> threeIndexList = new ArrayList<>();
@@ -60,11 +62,11 @@ public class Sum3B {
                 xToZRange = xToZRange.shrinkLeft(); // x++
 
                 int newX = xToZRange.first() + 1;
-                int searchYLength = newY - newX + 1;
-                if (searchYLength < 1) {
-                    return range0.shrinkRight(); // decrease "z" in a new loop.
+                if (lengthInclusive(newX, newY) < 1) {
+                    return range0.shrinkRight();  // decrease "z"
+                } else {
+                    searchY = Range.ofInclusive(newX, newY);
                 }
-                searchY = Range.ofInclusive(newX, newY);
                 assert !searchY.isEmpty();
             }
         }
@@ -94,8 +96,8 @@ public class Sum3B {
         static Range of(int x, int yExcl) {
             return new Range(x, yExcl);
         }
-        static boolean isValidInclusive(int x, int y) {
-            return (y >= x - 1);
+        static int lengthInclusive(int x, int y) {
+            return (y - x + 1);
         }
         static Range ofInclusive(int x, int y) {
             assert y >= x - 1 : "Incorrect range: " + x + ", " + y;

@@ -81,5 +81,4 @@ class Sum3BTest {
                 List.of(-1, -1, 2)
         );
     }
-
 }
