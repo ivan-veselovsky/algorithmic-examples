@@ -11,6 +11,7 @@ public class Sum3B {
         Arrays.sort(nums0);
 
         weights = nums0;
+        System.out.println(Arrays.toString(weights));
 
         if (nums0.length <= 2) {
             return List.of();
