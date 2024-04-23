@@ -1,7 +1,7 @@
 package edu.bsfindextobinarytreeindex;
 
 import static edu.common.MathUtils.maxContainedPowerOf2;
-import static edu.common.MathUtils.power2;
+import static edu.common.MathUtils.powerOf2;
 
 public class SortedArrayToBinaryTree {
 
@@ -11,7 +11,7 @@ public class SortedArrayToBinaryTree {
      */
     static double getBinaryTreeIndex(int arraySize, int bsfOrderIndex) {
         int bsfOrderLevel = maxContainedPowerOf2(bsfOrderIndex);
-        int denominator = power2(bsfOrderLevel + 1);
+        int denominator = powerOf2(bsfOrderLevel + 1);
         return (double)arraySize * (1 + 2 * bsfOrderIndex) / denominator - arraySize - 1;
     }
 }

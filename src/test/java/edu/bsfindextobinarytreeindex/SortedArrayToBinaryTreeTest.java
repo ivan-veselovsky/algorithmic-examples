@@ -4,17 +4,17 @@ import org.junit.jupiter.api.Test;
 
 import static edu.bsfindextobinarytreeindex.SortedArrayToBinaryTree.*;
 import static edu.common.MathUtils.maxContainedPowerOf2;
-import static edu.common.MathUtils.power2;
+import static edu.common.MathUtils.powerOf2;
 import static org.assertj.core.api.BDDAssertions.then;
 
 class SortedArrayToBinaryTreeTest {
 
     @Test
     void test() {
-        then(power2(0)).isEqualTo(1);
-        then(power2(1)).isEqualTo(2);
-        then(power2(2)).isEqualTo(4);
-        then(power2(3)).isEqualTo(8);
+        then(powerOf2(0)).isEqualTo(1);
+        then(powerOf2(1)).isEqualTo(2);
+        then(powerOf2(2)).isEqualTo(4);
+        then(powerOf2(3)).isEqualTo(8);
 
         then(maxContainedPowerOf2(13)).isEqualTo(3);
         then(maxContainedPowerOf2(1)).isEqualTo(0);

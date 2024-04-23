@@ -2,7 +2,7 @@ package edu.common;
 
 public class MathUtils {
 
-    public static int power2(int pow) {
+    public static int powerOf2(int pow) {
         return (1 << pow);
     }
 

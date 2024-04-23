@@ -1,7 +1,7 @@
 package edu.product_except_self;
 
 import static edu.common.MathUtils.maxContainedPowerOf2;
-import static edu.common.MathUtils.power2;
+import static edu.common.MathUtils.powerOf2;
 
 public class ProductExceptSelf {
     private int[] array;
@@ -51,12 +51,12 @@ public class ProductExceptSelf {
 
     int getPartialProductsLength(int arrayLength) {
         int maxPow2 = maxContainedPowerOf2(arrayLength - 1);
-        return power2(maxPow2 + 1) - 2;
+        return powerOf2(maxPow2 + 1) - 2;
     }
 
     int period(int index) {
         int p = maxContainedPowerOf2(index + 2);
-        return power2(p);
+        return powerOf2(p);
     }
 
     int shift(int index) {
