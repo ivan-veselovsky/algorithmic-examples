@@ -62,25 +62,20 @@ public class Heap {
         assert i >= 1 && i <= length;
         int index = i;
         while (index != 0) {
-            index = heap3(index, false);
+            index = heap3(index);
         }
     }
     /** Returns the changed mode index, or 0 otherwise. */
-    private int heap3(int i, boolean build) {
-        assert i >= 1;
-        assert i <= length;
+    private int heap3(int i) {
+        assert i >= 1 && i <= length;
 
         final int leftIndex = left(i);
         final int rightIndex = right(i);
-        if (build) {
-            assert leftIndex <= length;
-            assert rightIndex <= length;
-        }
 
         if (leftIndex <= length) {
             final int iv = get(i);
+            final int lv = get(leftIndex);
             if (rightIndex <= length) {
-                final int lv = get(leftIndex);
                 final int rv = get(rightIndex);
                 if (lv > rv) {
                     if (lv > iv) {
@@ -94,7 +89,6 @@ public class Heap {
                     }
                 }
             } else {
-                final int lv = get(leftIndex);
                 if (lv > iv) {
                     swap(i, leftIndex);
                     return leftIndex;
