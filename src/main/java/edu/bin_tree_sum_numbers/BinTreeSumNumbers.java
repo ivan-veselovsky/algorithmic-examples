@@ -14,6 +14,9 @@ public class BinTreeSumNumbers {
 
     int dfs(TreeNode node, int parentAccum) {
         int accum = parentAccum * 10 + node.val();
+        if (isLeaf(node)) { // leaf:
+            return accum;
+        }
 
         int sumInSubtrees = 0;
         if (node.left != null) {
@@ -23,9 +26,6 @@ public class BinTreeSumNumbers {
             sumInSubtrees += dfs(node.right, accum);
         }
 
-        if (isLeaf(node)) { // leaf:
-            return accum;
-        }
         return sumInSubtrees;
     }
 

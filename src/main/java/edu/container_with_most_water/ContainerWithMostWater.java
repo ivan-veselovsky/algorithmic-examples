@@ -19,8 +19,8 @@ public class ContainerWithMostWater {
 
         int x = 0;
         int y = height.length - 1;
-        int heightX = 0;
-        int heightY = 0;
+        int heightX;
+        int heightY;
         int maxArea = 0;
         int area;
         while (true) {
@@ -44,7 +44,7 @@ public class ContainerWithMostWater {
     }
 
     private int nextHigherThanBefore(int x, int heightX, int y) {
-        for (int i=x; i<y; i++) {
+        for (int i=x; i < y; i++) {
             if (height[i] > heightX) {
                 return i;
             }
@@ -53,7 +53,7 @@ public class ContainerWithMostWater {
     }
 
     private int previousHigherThanAfter(int y, int heightY, int x) {
-        for (int i=y; i>x; i--) {
+        for (int i=y; i > x; i--) {
             if (height[i] > heightY) {
                 return i;
             }

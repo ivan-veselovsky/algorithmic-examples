@@ -2,6 +2,8 @@ package edu.count_nodes_in_quasi_full_bin_tree;
 
 import edu.common.TreeNode;
 
+import static edu.common.MathUtils.powerOf2;
+
 /** Solution of O(log^2(N)). */
 public class CountNodesInQuasiFullTree {
     public int countNodes(final TreeNode root) {
@@ -13,12 +15,12 @@ public class CountNodesInQuasiFullTree {
         final int depthRight = sideDepth(root, false);
 
         if (depthLeft == depthRight) {
-            return pow2(depthLeft + 1) - 1;  // last level if full
+            return powerOf2(depthLeft + 1) - 1;  // last level if full
         }
         assert depthRight + 1 == depthLeft;
 
         int x = 0; // left path
-        int y = pow2(depthRight + 1) - 1; // right path
+        int y = powerOf2(depthRight + 1) - 1; // right path
 
         while (x + 1 < y) {
             int middlePath = (x + y) >> 1;
@@ -30,7 +32,7 @@ public class CountNodesInQuasiFullTree {
             }
         }
 
-        return pow2(depthLeft) + x;
+        return powerOf2(depthLeft) + x;
     }
 
     private int depth(TreeNode root, final int bitPath, int numberOfBits) {
@@ -65,10 +67,6 @@ public class CountNodesInQuasiFullTree {
             }
             depthCount++;
         }
-    }
-
-    public static int pow2(int pow) {
-        return (1 << pow);
     }
 
 }
