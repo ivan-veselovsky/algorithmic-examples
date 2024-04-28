@@ -26,4 +26,16 @@ class CustomPowerFunctionTest {
         then(actual).isEqualTo(0.25);
     }
 
+    @Test
+    void case4() {
+        double actual = new CustomPowerFunction().myPow(1.00001, 123456);
+        then(actual).isEqualTo(3.4368447520888217d, Offset.offset(2e-11));
+    }
+
+    //
+    @Test
+    void case5() {
+        double actual = new CustomPowerFunction().myPow(2.0, -2147483648);
+        then(actual).isEqualTo(0.d, Offset.offset(1e-15));
+    }
 }
