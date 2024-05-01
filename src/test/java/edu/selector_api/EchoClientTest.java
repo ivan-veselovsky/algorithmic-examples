@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -14,9 +15,9 @@ class EchoClientTest {
     @Test
     void basic_request_response() throws Exception {
         try (final EchoServer echoServer = new EchoServer()) {
-            CompletableFuture.runAsync(echoServer::run);
-
-            Thread.sleep(500); // wait the server to start, TODO: use correct sync instead
+            CountDownLatch startedLatch = new CountDownLatch(1);
+            CompletableFuture.runAsync(() -> echoServer.run0("localhost", EchoServer.PORT, startedLatch::countDown));
+            startedLatch.await();
 
             try (EchoClient echoClient = new EchoClient()) {
                 String response = echoClient.sendMessage("Foo Bar!");
@@ -29,9 +30,9 @@ class EchoClientTest {
     @Test
     void multithreaded_load() throws Exception {
         try (final EchoServer echoServer = new EchoServer()) {
-            CompletableFuture.runAsync(echoServer::run);
-
-            Thread.sleep(500); // wait the server to start, TODO: use correct sync instead
+            CountDownLatch startedLatch = new CountDownLatch(1);
+            CompletableFuture.runAsync(() -> echoServer.run0("localhost", EchoServer.PORT, startedLatch::countDown));
+            startedLatch.await();
 
             try (ExecutorService service = Executors.newFixedThreadPool(20)) {
                 for (int t=0; t<20; t++) {

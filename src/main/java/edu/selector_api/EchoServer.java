@@ -25,22 +25,24 @@ public class EchoServer implements AutoCloseable {
 
     @SneakyThrows
     public static void main(String[] args)  {
-        new EchoServer().run(args);
+        new EchoServer().run0("localhost", PORT, () -> {});
     }
 
     @SneakyThrows
-    public void run(String... args) {
+    public void run0(String host, int port, Runnable startedCallback) {
         try {
             selector = Selector.open();
 
             serverSocket = ServerSocketChannel.open();
-            serverSocket.bind(new InetSocketAddress("localhost", PORT));
+            serverSocket.bind(new InetSocketAddress(host, port));
             serverSocket.configureBlocking(false);
             serverSocket.register(selector, SelectionKey.OP_ACCEPT);
 
+            startedCallback.run();
+
             final ByteBuffer buffer = ByteBuffer.allocate(256);
             while (!stop.get()) {
-                int selected = selector.select(1000);
+                int selected = selector.select();
                 //System.out.println("selected: " + selected);
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> it = selectedKeys.iterator();
@@ -48,7 +50,7 @@ public class EchoServer implements AutoCloseable {
                     SelectionKey key = it.next();
 
                     if (key.isAcceptable()) {
-                        register(selector, serverSocket);
+                        acceptAndRegister();
                     }
                     if (key.isReadable()) {
                         if (!answerWithEcho(buffer, key)) {
@@ -68,8 +70,14 @@ public class EchoServer implements AutoCloseable {
     @SneakyThrows
     private void join() {
         stop.compareAndSet(false, true);
+
+        Selector selector0 = this.selector;
+        if (selector0 != null) {
+            selector0.wakeup();
+        }
+
         do {
-            Thread.sleep(5);
+            Thread.sleep(1);
         } while (!terminated.get());
     }
 
@@ -143,8 +151,8 @@ public class EchoServer implements AutoCloseable {
     }
 
     @SneakyThrows
-    private void register(Selector selector, ServerSocketChannel serverSocketChannel) {
-        SocketChannel socketChannel = serverSocketChannel.accept();
+    private void acceptAndRegister() {
+        SocketChannel socketChannel = serverSocket.accept();
         socketChannel.configureBlocking(false);
         socketChannel.register(selector, SelectionKey.OP_READ);
     }
