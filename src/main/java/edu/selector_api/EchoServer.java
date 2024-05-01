@@ -19,7 +19,7 @@ public class EchoServer implements AutoCloseable {
     static final int PORT = 5454;
 
     private Selector selector;
-    private ServerSocketChannel serverSocket;
+    private ServerSocketChannel serverSocketChannel;
     private final AtomicBoolean stop = new AtomicBoolean();
     private final AtomicBoolean terminated = new AtomicBoolean();
 
@@ -33,10 +33,10 @@ public class EchoServer implements AutoCloseable {
         try {
             selector = Selector.open();
 
-            serverSocket = ServerSocketChannel.open();
-            serverSocket.bind(new InetSocketAddress(host, port));
-            serverSocket.configureBlocking(false);
-            serverSocket.register(selector, SelectionKey.OP_ACCEPT);
+            serverSocketChannel = ServerSocketChannel.open();
+            serverSocketChannel.bind(new InetSocketAddress(host, port));
+            serverSocketChannel.configureBlocking(false);
+            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
             startedCallback.run();
 
@@ -47,17 +47,16 @@ public class EchoServer implements AutoCloseable {
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> it = selectedKeys.iterator();
                 while (it.hasNext()) {
-                    SelectionKey key = it.next();
+                    SelectionKey selectionKey = it.next();
 
-                    if (key.isAcceptable()) {
+                    if (selectionKey.isAcceptable()) {
                         acceptAndRegister();
                     }
-                    if (key.isReadable()) {
-                        if (!answerWithEcho(buffer, key)) {
+                    if (selectionKey.isReadable()) {
+                        if (!answerWithEcho(buffer, selectionKey)) {
                             stop.compareAndSet(false, true);
                         }
                     }
-                    buffer.clear();
 
                     it.remove();
                 }
@@ -86,7 +85,7 @@ public class EchoServer implements AutoCloseable {
     public void close() {
         join();
 
-        ServerSocketChannel serverSocket0 = this.serverSocket;
+        ServerSocketChannel serverSocket0 = this.serverSocketChannel;
         if (serverSocket0 != null) {
             serverSocket0.close();
         }
@@ -152,7 +151,7 @@ public class EchoServer implements AutoCloseable {
 
     @SneakyThrows
     private void acceptAndRegister() {
-        SocketChannel socketChannel = serverSocket.accept();
+        SocketChannel socketChannel = serverSocketChannel.accept();
         socketChannel.configureBlocking(false);
         socketChannel.register(selector, SelectionKey.OP_READ);
     }
