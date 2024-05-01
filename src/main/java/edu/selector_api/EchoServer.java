@@ -97,8 +97,8 @@ public class EchoServer implements AutoCloseable {
     }
 
     @SneakyThrows
-    private boolean answerWithEcho(final ByteBuffer buffer, SelectionKey key) {
-        SocketChannel socketChannel = (SocketChannel)key.channel();
+    private boolean answerWithEcho(final ByteBuffer buffer, SelectionKey selectionKey) {
+        SocketChannel socketChannel = (SocketChannel)selectionKey.channel();
         buffer.clear();
         int numberOfBytesRead = socketChannel.read(buffer);
         if (numberOfBytesRead > 0) {

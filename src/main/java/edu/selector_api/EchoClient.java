@@ -22,9 +22,13 @@ public class EchoClient implements AutoCloseable {
         buffer.clear();
     }
 
-    @SneakyThrows
     EchoClient() {
-        socketChannel = SocketChannel.open(new InetSocketAddress("localhost", PORT));
+        this("localhost", PORT);
+    }
+
+    @SneakyThrows
+    public EchoClient(String host, int port) {
+        socketChannel = SocketChannel.open(new InetSocketAddress(host, port));
         buffer = ByteBuffer.allocate(256);
     }
 
