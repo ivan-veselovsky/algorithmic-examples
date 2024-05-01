@@ -40,8 +40,8 @@ public class EchoServer implements AutoCloseable {
 
             final ByteBuffer buffer = ByteBuffer.allocate(256);
             while (!stop.get()) {
-                int selected = selector.select();
-                System.out.println("selected: " + selected);
+                int selected = selector.select(1000);
+                //System.out.println("selected: " + selected);
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> it = selectedKeys.iterator();
                 while (it.hasNext()) {
@@ -101,9 +101,9 @@ public class EchoServer implements AutoCloseable {
                 System.out.println("STOP signalled. Exiting.");
                 return false;
             } else {
-                System.out.println("message received: [" + message + "]");
+                //System.out.println("message received: [" + message + "]");
                 revert(buffer);
-                System.out.println("message sent: [" + readAsString(buffer) + "]");
+                //System.out.println("message sent: [" + readAsString(buffer) + "]");
                 socketChannel.write(buffer);
             }
         } else {

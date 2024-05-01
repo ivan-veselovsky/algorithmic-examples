@@ -12,9 +12,11 @@ import static org.assertj.core.api.BDDAssertions.then;
 class EchoClientTest {
 
     @Test
-    void basic_request_response() {
+    void basic_request_response() throws Exception {
         try (final EchoServer echoServer = new EchoServer()) {
             CompletableFuture.runAsync(echoServer::run);
+
+            Thread.sleep(500); // wait the server to start, TODO: use correct sync instead
 
             try (EchoClient echoClient = new EchoClient()) {
                 String response = echoClient.sendMessage("Foo Bar!");
@@ -25,9 +27,11 @@ class EchoClientTest {
     }
 
     @Test
-    void multithreaded_load() {
+    void multithreaded_load() throws Exception {
         try (final EchoServer echoServer = new EchoServer()) {
             CompletableFuture.runAsync(echoServer::run);
+
+            Thread.sleep(500); // wait the server to start, TODO: use correct sync instead
 
             try (ExecutorService service = Executors.newFixedThreadPool(20)) {
                 for (int t=0; t<20; t++) {
