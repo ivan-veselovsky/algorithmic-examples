@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import static edu.balancedbrackets.Result.isBalanced;
 import static org.assertj.core.api.BDDAssertions.then;
 
-class ResultTest {
+class CountGroupsTest {
     @ParameterizedTest
     @MethodSource("cases")
     void testCases(String input, String expectedOutput) {
