@@ -1,17 +1,12 @@
 package edu.longestincreasingpath;
 
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * https://leetcode.com/problems/longest-increasing-subsequence/
- *
  * Given an integer array nums, return the length of the longest strictly increasing subsequence.
- *
- * A subsequence is a sequence that can be derived from an array by deleting some or no elements without changing the order of the remaining elements. For example, [3,6,2,7] is a subsequence of the array [0,3,1,6,2,2,7].
- *
- *
+ * A subsequence is a sequence that can be derived from an array by deleting some or no elements
+ * without changing the order of the remaining elements. For example, [3,6,2,7] is a subsequence of the array [0,3,1,6,2,2,7].
  *
  * Example 1:
  *
@@ -34,32 +29,68 @@ import java.util.TreeMap;
  * -104 <= nums[i] <= 104
  */
 public class LongestIncreasingPathInArray {
-
     public int lengthOfLIS(int[] nums) {
-        final NavigableMap<Integer, Integer> map = new TreeMap<>();
+        //return arrayVersion(nums);
+        return treeSetVersion(nums);
+    }
 
+    /** Very short TreeSet-based version: */
+    int treeSetVersion(int[] nums) {
+        final NavigableSet<Integer> set = new TreeSet<>();
         for (final int v : nums) {
-            Map.Entry<Integer, Integer> higherEntry = map.higherEntry(v);
-            Map.Entry<Integer, Integer> floorEntry = map.floorEntry(v);
-
-            if (higherEntry == null) {
-                // add upper entry with "v + 1"
-                if (floorEntry == null) {
-                    map.put(v, 1);
-                } else if (v > floorEntry.getKey()) {
-                    map.put(v, floorEntry.getValue() + 1);
-                }
-            } else {
-                // "lower" the higherEntry:
-                if (floorEntry == null || floorEntry.getKey() < v) {
-                    map.remove(higherEntry.getKey());
-                    map.put(v, higherEntry.getValue());
+            if (set.add(v)) {
+                Integer higher = set.higher(v); // higher > v
+                if (higher != null) {
+                    set.remove(higher);
                 }
             }
-//            map.entrySet().forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
-//            System.out.println("---------------");
         }
+        return set.size();
+    }
 
-        return map.lastEntry().getValue();
+    /** Very fast array-based version. It implements exactly the same logic, but in a faster way,
+     * as it avoids tree re-balancing.
+     *  Array maintains ascending sorted numbers and the max element.
+     *  The array can only grow.
+     *  If a new element is greater than max, it is written to the position after the last, size++.
+     *  Otherwise, the new element's position is searched with binary search, and existing
+     *  element is replaced with the new one (element is "lowered").
+     */
+    int arrayVersion(int[] nums) {
+        Arr arr = new Arr(nums.length);
+        for (final int v : nums) {
+            arr.push(v);
+        }
+        return arr.size();
+    }
+
+    static class Arr {
+        final int[] array;
+        int size;
+        int max;
+        Arr(int length) {
+            array = new int[length];
+        }
+        void push(int v) {
+            if (size == 0 || v > max) {
+                array[size] = v;
+                size++;
+                max = v;
+            } else {
+                int pos = Arrays.binarySearch(array, 0, size, v);
+                if (pos < 0) {
+                    pos = - pos - 1;
+                }
+                if (v < array[pos]) {
+                    array[pos] = v;
+                    if (pos == size - 1) {
+                        max = v;
+                    }
+                }
+            }
+        }
+        int size() {
+            return size;
+        }
     }
 }
