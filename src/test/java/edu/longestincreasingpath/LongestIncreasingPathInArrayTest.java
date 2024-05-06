@@ -29,7 +29,7 @@ class LongestIncreasingPathInArrayTest {
              Arguments.of(new int[] {2,3,2}, 2),
              Arguments.of(new int[] {2,3,1}, 2),
              Arguments.of(new int[] {7,7,7,7,7,7,7}, 1),
-             Arguments.of(new int[] {10, 20, 30,  21, 11, 1,  12, 2, }, 3)
+             Arguments.of(new int[] {10, 20, 30,  21, 11, 1, 12, 2, 3}, 3)
         );
     }
 }

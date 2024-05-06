@@ -30,8 +30,8 @@ import java.util.*;
  */
 public class LongestIncreasingPathInArray {
     public int lengthOfLIS(int[] nums) {
-        //return arrayVersion(nums);
-        return treeSetVersion(nums);
+        return arrayVersion(nums);
+        //return treeSetVersion(nums);
     }
 
     /** Very short TreeSet-based version: */
