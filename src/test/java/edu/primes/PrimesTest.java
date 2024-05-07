@@ -5,14 +5,13 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static edu.primes.Primes.factorize;
-import static edu.primes.Primes.nextPrime;
+import static edu.primes.Primes.*;
 import static org.assertj.core.api.BDDAssertions.then;
 
 class PrimesTest {
 
     @Test
-    void isPrime() {
+    void isPrime0() {
         then(Primes.isPrime(1)).isFalse();
         then(Primes.isPrime(2)).isTrue();
         then(Primes.isPrime(3)).isTrue();
@@ -51,4 +50,21 @@ class PrimesTest {
         then(factorize(643L)).containsExactly(643L, 1L);
         then(factorize(123456L)).containsExactly(2L, 6L, 3L, 1L, 643L, 1L);
     }
+
+    @Test
+    void test_floorPrime0() {
+        then(floorPrime(16)).isEqualTo(13);
+        then(floorPrime(17)).isEqualTo(17);
+        then(floorPrime(18)).isEqualTo(17);
+    }
+
+    @Test
+    void test_floorPrime1() {
+        then(floorPrime(Integer.MAX_VALUE / 26)).isEqualTo(82595483L);
+
+        long p2 = floorPrime(Long.MAX_VALUE / 26);
+        then(p2).isEqualTo(354745078340568241L);
+        then(p2 * 26 < Long.MAX_VALUE).isTrue();
+    }
+
 }

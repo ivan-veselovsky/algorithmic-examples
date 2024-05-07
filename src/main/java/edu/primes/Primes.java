@@ -28,7 +28,7 @@ public class Primes {
         assert (prime == 2) || prime % 2 == 1; // 2 is the only even prime
         long candidate = (prime == 2) ? prime + 1 : prime + 2; // .., so we check only odd numbers
         while (!isPrime(candidate)) {
-            if (candidate % 6 == 1) { // primes always lie on grid  (5 + k * 6) or (7 + k * 6)
+            if (candidate % 6 == 1) { // primes always lie on grid  (5 + k * 6) or (1 + k * 6)
                 candidate += 4;
             } else {
                 candidate += 2;
@@ -36,6 +36,28 @@ public class Primes {
         }
         return candidate;
     }
+
+    public static long floorPrime(final long x) {
+        long candidate = x;
+        while (true) {
+            long x6 = candidate % 6;
+            if (x6 == 1L || x6 == 5L) {
+                break;
+            }
+            candidate--;
+        }
+        boolean step2 = (candidate % 6) == 1;
+        while (!isPrime(candidate)) {
+            if (step2) { // primes always lie on grid  (5 + k * 6) or (1 + k * 6)
+                candidate -= 2L;
+            } else {
+                candidate -= 4L;
+            }
+            step2 = !step2;
+        }
+        return candidate;
+    }
+
 
     public static List<Long> factorize(long n) {
         List<Long> result = new ArrayList<>(32);
