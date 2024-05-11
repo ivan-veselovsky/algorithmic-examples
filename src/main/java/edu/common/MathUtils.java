@@ -15,4 +15,11 @@ public class MathUtils {
         return cnt;
     }
 
+    public static int sign(long x) {
+        if (x == 0) {
+            return 0;
+        } else {
+            return (x > 0L) ? 1 : -1;
+        }
+    }
 }

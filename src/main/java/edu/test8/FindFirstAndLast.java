@@ -18,7 +18,7 @@ public class FindFirstAndLast {
 
         int middle;
         while (true) {
-            middle =  (x + y)/2;
+            middle = (x + y)/2;
             if (middle == x) {
                 break;
             }
