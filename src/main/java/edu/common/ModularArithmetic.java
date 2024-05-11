@@ -87,9 +87,9 @@ public class ModularArithmetic {
             v %= modulo;
         }
         if (v < 0) {
+            setNotExact();
             v += modulo;
         }
-        //assert abs(v) < modulo;
         assert v >= 0 && v < modulo;
         return v;
     }
