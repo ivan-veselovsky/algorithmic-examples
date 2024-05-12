@@ -1,7 +1,7 @@
-//package edu.longest_palindromic_substring;
-//
-//import edu.rabin_karp_substring_search.RabinKarp;
-//
+package edu.longest_palindromic_substring;
+
+import edu.rabin_karp_substring_search.RabinKarp;
+
 //// Currently do for odd palindromicity.
 //public class LongestPalindromicSubstring {
 //    private String inputString;
@@ -17,7 +17,7 @@
 //    public String longestPalindrome(String s) {
 //        this.inputString = s;
 //        this.chars = s.toCharArray();
-//        this.textValues = RabinKarp.makeTextValues(inputString, c -> c - 'a');
+//        this.textValues = RabinKarp.makeTextValues(inputString, ch -> ch - 'a');
 //
 //        int left = chars.length / 2;
 //        int right = chars.length / 2 + 1;

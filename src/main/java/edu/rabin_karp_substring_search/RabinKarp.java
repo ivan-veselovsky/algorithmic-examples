@@ -6,6 +6,10 @@ import lombok.Getter;
 
 import java.util.function.IntUnaryOperator;
 
+/**
+ * A "big-endian" representation: most significant digits are in lower String indices.
+ * Head always has lower index than Tail.
+ */
 @Getter
 public class RabinKarp {
     // actually it should be the largest prime, such that q * alphabetModule < Long.MAX_VALUE
@@ -14,6 +18,7 @@ public class RabinKarp {
     private final ModularArithmetic mod;
     private final int alphabetSize; // d
     private final long inverseAlphabetSize;
+    private final boolean bigEndian;
     private final int[] textValues;
 
     private long value;
@@ -29,7 +34,13 @@ public class RabinKarp {
         return textValues;
     }
 
-    public RabinKarp(long modulo, int alphabetSize, int[] textValues) {
+    public RabinKarp(long modulo,
+                     int alphabetSize, int[] textValues) {
+        this(true, modulo, alphabetSize, textValues);
+    }
+
+    public RabinKarp(boolean bigEndian, long modulo,
+                     int alphabetSize, int[] textValues) {
         Preconditions.checkArgument(alphabetSize > 0);
         Preconditions.checkArgument(modulo > alphabetSize);
         this.alphabetSize = alphabetSize;
@@ -41,6 +52,7 @@ public class RabinKarp {
         assert mod.isModuloInverse(alphabetSize, inv);
         this.inverseAlphabetSize = inv;
         this.textValues = textValues;
+        this.bigEndian = bigEndian;
     }
 
     public RabinKarp compute(final int headInclusive, final int tailExclusive) {
@@ -60,57 +72,106 @@ public class RabinKarp {
         return tailExclusive - headInclusive;
     }
 
-    public void shiftToTail() {
+    public boolean shiftToTail() {
+        if (tailExclusive == textValues.length) {
+            return false;
+        }
         int headValue = textValues[headInclusive];
         headInclusive++;
         tailExclusive++;
         int newTailValue = textValues[tailExclusive - 1];
 
-        long prod1 = mod.prod(headValue, h);
-        long diff = mod.subtract(value, prod1);
-        long prod2 = mod.prod(alphabetSize, diff);
-        value = mod.sum(prod2, newTailValue);
+        if (bigEndian) {
+            shiftToLeastSignificant(headValue, newTailValue);
+        } else {
+            shiftToMostSignificant(headValue, newTailValue);
+        }
 
         assert checkInvariants();
+        return true;
     }
 
-    public void shiftToHead() {
+    private void shiftToLeastSignificant(int mostSignificantValueToSubtract, int leastSignificantValueToAdd) {
+        long prod1 = mod.prod(mostSignificantValueToSubtract, h);
+        long diff = mod.subtract(value, prod1);
+        long prod2 = mod.prod(alphabetSize, diff);
+        value = mod.sum(prod2, leastSignificantValueToAdd);
+    }
+
+    public boolean shiftToHead() {
+        if (headInclusive == 0) {
+            return false;
+        }
         int tailValue = textValues[tailExclusive - 1];
         tailExclusive--;
         headInclusive--;
         int newHeadValue = textValues[headInclusive];
 
-        long prod_new_head_h = mod.prod(newHeadValue, h);
-        if (mod.modCount() == 0) {
-            value = mod.sum((value - tailValue) / alphabetSize, prod_new_head_h);
+        if (bigEndian) {
+            shiftToMostSignificant(tailValue, newHeadValue);
         } else {
-            long sub1 = mod.subtract(value, tailValue);
-            long prod2 = mod.prod(sub1, inverseAlphabetSize);
-            value = mod.sum(prod2, prod_new_head_h);
+            shiftToLeastSignificant(tailValue, newHeadValue);
         }
 
         assert checkInvariants();
+        return true;
     }
 
-    public void extendHead() {
+    private void shiftToMostSignificant(int leastSignificantValueToSubtract, int mostSignificantValueToAdd) {
+        final long prod_new_head_h = mod.prod(mostSignificantValueToAdd, h);
+        if (mod.modCount() == 0) {
+            value = mod.sum((value - leastSignificantValueToSubtract) / alphabetSize, prod_new_head_h);
+        } else {
+            long sub1 = mod.subtract(value, leastSignificantValueToSubtract);
+            long prod2 = mod.prod(sub1, inverseAlphabetSize);
+            value = mod.sum(prod2, prod_new_head_h);
+        }
+    }
+
+    public boolean extendHead() {
+        if (headInclusive == 0) {
+            return false;
+        }
         headInclusive--;
         int newHeadValue = textValues[headInclusive];
 
         increasePowerOfH();
-        value = mod.sum(value, mod.prod(newHeadValue, h));
+        if (bigEndian) {
+            addMostSignificant(newHeadValue);
+        } else {
+            addLeastSignificant(newHeadValue);
+        }
 
         assert checkInvariants();
+        return true;
     }
 
-    public void extendTail() {
+    public boolean extendTail() {
+        if (tailExclusive == textValues.length) {
+            return false;
+        }
         tailExclusive++;
         int newTailValue = textValues[tailExclusive - 1];
 
-        value = mod.sum(
-                mod.prod(alphabetSize, value), newTailValue);
         increasePowerOfH();
+        if (bigEndian) {
+            addLeastSignificant(newTailValue);
+        } else {
+            addMostSignificant(newTailValue);
+        }
 
         assert checkInvariants();
+        return true;
+    }
+
+    private void addMostSignificant(int valueToAdd) {
+        // NB! h must already be increased.
+        value = mod.sum(value, mod.prod(valueToAdd, h));
+    }
+
+    private void addLeastSignificant(int valueToAdd) {
+        value = mod.sum(
+                mod.prod(alphabetSize, value), valueToAdd);
     }
 
     private void increasePowerOfH() {
@@ -133,7 +194,7 @@ public class RabinKarp {
      */
     public int maybeMatch(RabinKarp another) {
         if (value == another.value()) {
-            if (isRealHit(another)) {
+            if (mod.modCount() == 0 || isRealHit(another)) {
                 return 1;
             } else {
                 return -1;
