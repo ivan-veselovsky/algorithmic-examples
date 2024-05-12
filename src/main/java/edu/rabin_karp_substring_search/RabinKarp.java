@@ -11,14 +11,13 @@ public class RabinKarp {
     // actually it should be the largest prime, such that q * alphabetModule < Long.MAX_VALUE
     public static final long q_26 = 354745078340568241L;
 
-    private final long q;
     private final ModularArithmetic mod;
     private final int alphabetSize; // d
     private final long alphabetSizeInverse;
     private final int[] textValues;
 
     private long value;
-    private long h; // d ^ (m-1) % q , where m is the pattern length
+    private long h; // d ^ (m-1) % modulo , where m is the pattern length
     private int headInclusive;
     private int tailExclusive;
 
@@ -33,7 +32,6 @@ public class RabinKarp {
     public RabinKarp(long q, int alphabetSize, int[] textValues) {
         Preconditions.checkArgument(alphabetSize > 0);
         Preconditions.checkArgument(q > alphabetSize);
-        this.q = q;
         this.alphabetSize = alphabetSize;
         this.mod = new ModularArithmetic(q);
         long inv = mod.moduloInverse(alphabetSize);
@@ -76,13 +74,10 @@ public class RabinKarp {
         tailExclusive++;
         int newTailValue = textValues[tailExclusive - 1];
 
-        final long v0 = value;
         long prod1 = mod.prod(headValue, h);
         long diff = mod.subtract(value, prod1);
         long prod2 = mod.prod(alphabetSize, diff);
         value = mod.sum(prod2, newTailValue);
-//        long v_check = mod.mod(alphabetSize * (v0 - headValue * h) + newTailValue);
-//        assert v_check == value;
 
         assert checkInvariants();
     }
@@ -94,13 +89,14 @@ public class RabinKarp {
         int newHeadValue = textValues[headInclusive];
 
         long prod_new_head_h = mod.prod(newHeadValue, h);
-        if (mod.exact()) {
+        if (mod.modCount() == 0) {
             value = mod.sum((value - tailValue) / alphabetSize, prod_new_head_h);
         } else {
             long sub1 = mod.subtract(value, tailValue);
             long prod2 = mod.prod(sub1, alphabetSizeInverse);
             value = mod.sum(prod2, prod_new_head_h);
         }
+
         assert checkInvariants();
     }
 
@@ -129,8 +125,39 @@ public class RabinKarp {
         h = mod.prod(h, alphabetSize);
     }
 
+    /** TODO: need this method? */
     public boolean exact() {
-        return mod.exact();
+        return mod.modCount() == 0;
+    }
+
+    /**
+     * 1 == hit,
+     * 0 == does not match,
+     * -1 == spurious hit.
+     */
+    public int maybeMatch(RabinKarp another) {
+        if (value == another.value()) {
+            if (isRealHit(another)) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+        return 0;
+    }
+
+    private boolean isRealHit(RabinKarp another) {
+        if (length() != another.length()) {
+            return false;
+        }
+        int[] anotherValues = another.textValues();
+        int anotherHead = another.headInclusive();
+        for (int i = 0; i < length(); i++) {
+            if (textValues[headInclusive + i] != anotherValues[anotherHead + i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean checkInvariants() {

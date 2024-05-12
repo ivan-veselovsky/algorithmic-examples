@@ -24,12 +24,14 @@ class ModularArithmeticTest {
         then(mod13.isModuloInverse(a, actualInverse)).isTrue();
         then(actualInverse).isEqualTo(4);
 
-        final ModularArithmetic mod7 = new ModularArithmetic(7);
-        then(mod7.moduloInverse(10)).isEqualTo(5);
+        ModularArithmetic mod7 = new ModularArithmetic(7);
+        long inv_10 = mod7.moduloInverse(10);
+        then(inv_10).isEqualTo(5);
+        then(mod7.isModuloInverse(10, 5)).isTrue();
     }
 
     @Test
-    void test_mod() {
+    void mod() {
         ModularArithmetic mod = new ModularArithmetic(7);
 
         then(mod.mod(0)).isEqualTo(0L);
@@ -42,7 +44,7 @@ class ModularArithmeticTest {
     }
 
     @Test
-    void test_sum() {
+    void sum() {
         ModularArithmetic mod = new ModularArithmetic(7);
 
         then(mod.sum(0, 1)).isEqualTo(1L);
@@ -55,16 +57,16 @@ class ModularArithmeticTest {
     }
 
     @Test
-    void test_prod_1() {
+    void prod_1() {
         final ModularArithmetic mod_q_26 = new ModularArithmetic(q_26);
 
         long actual = mod_q_26.prod(13L, 643L);
         then(actual).isEqualTo(8359L);
-        then(mod_q_26.exact()).isTrue();
+        then(mod_q_26.modCount()).isZero();
 
         actual = mod_q_26.prod(q_26, q_26);
         then(actual).isEqualTo(0L);
-        then(mod_q_26.exact()).isFalse();
+        then(mod_q_26.modCount()).isGreaterThan(0);
 
         actual = mod_q_26.prod(Long.MAX_VALUE, q_26);
         then(actual).isEqualTo(0L);
@@ -85,7 +87,7 @@ class ModularArithmeticTest {
     }
 
     @Test
-    void test_prod_2() {
+    void prod_2() {
         ModularArithmetic mod7 = new ModularArithmetic(7);
 
         then(mod7.prod(0, 1)).isEqualTo(0L);
@@ -95,13 +97,5 @@ class ModularArithmeticTest {
         then(mod7.prod(1, -2)).isEqualTo(5L);
         then(mod7.prod(-5, -3)).isEqualTo(1L);
         then(mod7.prod(-8, 5)).isEqualTo(2L);
-    }
-
-    @Test
-    void test_inv() {
-        ModularArithmetic mod = new ModularArithmetic(7);
-        long inv_10 = mod.moduloInverse(10);
-        then(inv_10).isEqualTo(5);
-        then(mod.isModuloInverse(10, 5)).isTrue();
     }
 }

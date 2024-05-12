@@ -27,15 +27,14 @@ class RabinKarpTest {
                 .compute(0, patternStr.length());
         then(rabinKarpText.value()).isEqualTo(23590L);
 
-        final long valuePattern = rabinKarpPattern.value();
         final Set<Integer> matches = new TreeSet<>();
+        int spuriousHitCount = 0;
         for (int i = 0; i <= (textStr.length() - patternStr.length()); i++) {
             long textValue = rabinKarpText.value();
-            then(textValue).isGreaterThan(-rabinKarpPattern.mod().modulo()).isLessThan(rabinKarpPattern.mod().modulo());
-            if ((textValue == valuePattern)
-                    && ((rabinKarpText.exact() && rabinKarpPattern.exact())
-                        || textStr.startsWith(patternStr, i))) { // check for spurious hit
-                    matches.add(i);
+            then(textValue).isGreaterThanOrEqualTo(0L).isLessThan(rabinKarpPattern.mod().modulo());
+            switch (rabinKarpPattern.maybeMatch(rabinKarpText)) {
+                case 1 -> matches.add(i);
+                case -1 -> spuriousHitCount++;
             }
             if (i == 1) {
                 then(rabinKarpText.value()).isEqualTo(35902L);
@@ -48,6 +47,7 @@ class RabinKarpTest {
         then(matches).containsExactly(6, 22, 31);
         then(rabinKarpText.exact()).isTrue();
         then(rabinKarpPattern.exact()).isTrue();
+        then(spuriousHitCount).isZero();
     }
 
     @Test
@@ -62,15 +62,14 @@ class RabinKarpTest {
                 .compute(textStr.length() - patternStr.length(), textStr.length());
         then(rabinKarpText.value()).isEqualTo(31415L);
 
-        final long valuePattern = rabinKarpPattern.value();
         final Set<Integer> matches = new TreeSet<>();
+        int spuriousHitCount = 0;
         for (int i = (textStr.length() - patternStr.length()); i >= 0; i--) {
             long textValue = rabinKarpText.value();
-            then(textValue).isGreaterThan(-rabinKarpPattern.mod().modulo()).isLessThan(rabinKarpPattern.mod().modulo());
-            if ((textValue == valuePattern)
-                    && ((rabinKarpText.exact() && rabinKarpPattern.exact())
-                        || textStr.startsWith(patternStr, i))) { // check for spurious hit
-                matches.add(i);
+            then(textValue).isGreaterThanOrEqualTo(0).isLessThan(rabinKarpPattern.mod().modulo());
+            switch (rabinKarpPattern.maybeMatch(rabinKarpText)) {
+                case 1 -> matches.add(i);
+                case -1 -> spuriousHitCount++;
             }
             if (i == 0) {
                 then(rabinKarpText.value()).isEqualTo(23590L);
@@ -85,6 +84,7 @@ class RabinKarpTest {
         then(matches).containsExactly(6, 22, 31);
         then(rabinKarpText.exact()).isTrue();
         then(rabinKarpPattern.exact()).isTrue();
+        then(spuriousHitCount).isZero();
     }
 
     @Test
@@ -105,13 +105,13 @@ class RabinKarpTest {
         then(rabinKarpText.value()).isEqualTo(8L);
 
         final Set<Integer> matches = new TreeSet<>();
+        int spuriousHitCount = 0;
         for (int i = 0; i <= (textStr.length() - patternStr.length()); i++) {
             long textValue = rabinKarpText.value();
-            then(textValue).isGreaterThan(-q).isLessThan(q);
-            if ((textValue == patternValue)
-                    && ((rabinKarpText.exact() && rabinKarpPattern.exact())
-                    || textStr.startsWith(patternStr, i))) { // check for spurious hit
-                matches.add(i);
+            then(textValue).isGreaterThanOrEqualTo(0).isLessThan(q);
+            switch (rabinKarpPattern.maybeMatch(rabinKarpText)) {
+                case 1 -> matches.add(i);
+                case -1 -> spuriousHitCount++;
             }
             if (i == 1) {
                 then(rabinKarpText.value()).isEqualTo(9L);
@@ -122,6 +122,7 @@ class RabinKarpTest {
         }
 
         then(matches).containsExactly(6, 22, 31);
+        then(spuriousHitCount).isEqualTo(3);
     }
 
     @Test
@@ -142,13 +143,13 @@ class RabinKarpTest {
         then(rabinKarpText.value()).isEqualTo(7L);
 
         final Set<Integer> matches = new TreeSet<>();
+        int spuriousHitCount = 0;
         for (int i = (textStr.length() - patternStr.length()); i >= 0; i--) {
             long textValue = rabinKarpText.value();
-            then(textValue).isGreaterThan(-q).isLessThan(q);
-            if ((textValue == patternValue)
-                    && ((rabinKarpText.exact() && rabinKarpPattern.exact())
-                    || textStr.startsWith(patternStr, i))) { // check for spurious hit
-                matches.add(i);
+            then(textValue).isGreaterThanOrEqualTo(0L).isLessThan(q);
+            switch (rabinKarpPattern.maybeMatch(rabinKarpText)) {
+                case 1 -> matches.add(i);
+                case -1 -> spuriousHitCount++;
             }
             if (i == 1) {
                 then(rabinKarpText.value()).isEqualTo(9L);
@@ -159,5 +160,6 @@ class RabinKarpTest {
         }
 
         then(matches).containsExactly(6, 22, 31);
+        then(spuriousHitCount).isEqualTo(3);
     }
 }

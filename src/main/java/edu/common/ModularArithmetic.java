@@ -3,12 +3,10 @@ package edu.common;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
+@Getter
 public class ModularArithmetic {
-    @Getter
     private final long modulo;
-    private final AtomicBoolean exact = new AtomicBoolean(true); // it means, a value was %-ed by the modulo.
+    private long modCount;
 
     public ModularArithmetic(long mod) {
         Preconditions.checkArgument(mod > 0L);
@@ -59,13 +57,8 @@ public class ModularArithmetic {
         return mod(a * b - c * modulo);
     }
 
-    private void setNotExact() {
-        while (true) {
-            boolean current = exact.get();
-            if (!current || exact.compareAndSet(true, false)) {
-                return;
-            }
-        }
+    private void modIncrease() {
+        modCount++;
     }
 
     public long subtract(long a, long b) {
@@ -90,19 +83,19 @@ public class ModularArithmetic {
 
     public long mod(final long v0) {
         long v = v0;
+        boolean mod = false;
         if (v >= modulo || v <= -modulo) {
-            setNotExact();
             v %= modulo;
+            mod = true;
         }
         if (v < 0) {
-            setNotExact();
             v += modulo;
+            mod = true;
+        }
+        if (mod) {
+            modIncrease();
         }
         assert v >= 0 && v < modulo;
         return v;
-    }
-
-    public boolean exact() {
-        return exact.get();
     }
 }
