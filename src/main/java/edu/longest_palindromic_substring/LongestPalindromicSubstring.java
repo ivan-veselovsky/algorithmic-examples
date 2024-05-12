@@ -1,13 +1,12 @@
-package edu.longest_palindromic_substring;
-
-//import edu.rabin_karp_substring_search.RabinKarp;
+//package edu.longest_palindromic_substring;
 //
-//import static java.lang.Math.max;
+//import edu.rabin_karp_substring_search.RabinKarp;
 //
 //// Currently do for odd palindromicity.
 //public class LongestPalindromicSubstring {
 //    private String inputString;
 //    private char[] chars;
+//    private int[] textValues;
 //    private RabinKarp rkA;
 //    private RabinKarp rkB;
 //    private RabinKarp rkC;
@@ -18,6 +17,7 @@ package edu.longest_palindromic_substring;
 //    public String longestPalindrome(String s) {
 //        this.inputString = s;
 //        this.chars = s.toCharArray();
+//        this.textValues = RabinKarp.makeTextValues(inputString, c -> c - 'a');
 //
 //        int left = chars.length / 2;
 //        int right = chars.length / 2 + 1;
@@ -53,20 +53,18 @@ package edu.longest_palindromic_substring;
 //        }
 //    }
 //
-//    private boolean tryIncreasePalindromicity(int centerIndex, RabinKarpNumber left, RabinKarpNumber right) {
+//    private boolean tryIncreasePalindromicity(int centerIndex, RabinKarp left, RabinKarp right) {
 //        // 0. Check fast negative
 //        char firstLeft = chars[centerIndex - provenHalfPalindromicity];
 //        char firstRight = chars[centerIndex + provenHalfPalindromicity];
 //        if (firstLeft != firstRight) {
-//            left.shiftLeft();
-//            right.shiftLeft();
+//            left.shiftToHead();
+//            right.shiftToTail();
 //            return false; // short false.
 //        }
 //
 //        // increase RK
 //        left.addHighDigit(firstLeft);
 //        right.addHighDigit(firstRight);
-//
-//
 //    }
 //}

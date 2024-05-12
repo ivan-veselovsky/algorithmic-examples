@@ -88,6 +88,48 @@ class RabinKarpTest {
     }
 
     @Test
+    void shift_to_head_exact_extend_head() {
+        final int[] patternValues = RabinKarp.makeTextValues(patternStr, valueProvider);
+        RabinKarp rabinKarpPattern = new RabinKarp(q_26,10, patternValues)
+                .compute(0, patternStr.length());
+        then(rabinKarpPattern.value()).isEqualTo(31415L);
+
+        final int[] textValues = RabinKarp.makeTextValues(textStr, valueProvider);
+        RabinKarp rabinKarpText = new RabinKarp(q_26,10, textValues)
+                .compute(textStr.length(), textStr.length());
+        then(rabinKarpText.value()).isEqualTo(0L);
+        for (int i = 0; i < patternStr.length(); i++) {
+            rabinKarpText.extendHead();
+        }
+        then(rabinKarpText.value()).isEqualTo(31415L);
+
+        final Set<Integer> matches = new TreeSet<>();
+        int spuriousHitCount = 0;
+        for (int i = (textStr.length() - patternStr.length()); i >= 0; i--) {
+            long textValue = rabinKarpText.value();
+            then(textValue).isGreaterThanOrEqualTo(0).isLessThan(rabinKarpPattern.mod().modulo());
+            switch (rabinKarpPattern.maybeMatch(rabinKarpText)) {
+                case 1 -> matches.add(i);
+                case -1 -> spuriousHitCount++;
+            }
+            if (i == 0) {
+                then(rabinKarpText.value()).isEqualTo(23590L);
+            }
+            if (i == 1) {
+                then(rabinKarpText.value()).isEqualTo(35902L);
+            }
+            if (i > 0) {
+                rabinKarpText.shiftToHead();
+            }
+        }
+        then(matches).containsExactly(6, 22, 31);
+        then(rabinKarpText.exact()).isTrue();
+        then(rabinKarpPattern.exact()).isTrue();
+        then(spuriousHitCount).isZero();
+    }
+
+
+    @Test
     void shift_to_tail_moduled() {
         final long q = 13;
 

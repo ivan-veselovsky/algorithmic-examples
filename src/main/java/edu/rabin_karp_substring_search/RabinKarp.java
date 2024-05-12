@@ -13,7 +13,7 @@ public class RabinKarp {
 
     private final ModularArithmetic mod;
     private final int alphabetSize; // d
-    private final long alphabetSizeInverse;
+    private final long inverseAlphabetSize;
     private final int[] textValues;
 
     private long value;
@@ -21,7 +21,7 @@ public class RabinKarp {
     private int headInclusive;
     private int tailExclusive;
 
-    static int[] makeTextValues(String text, IntUnaryOperator valueProvider) {
+    public static int[] makeTextValues(String text, IntUnaryOperator valueProvider) {
         int[] textValues = new int[text.length()];
         for (int i = 0; i < textValues.length; i++) {
             textValues[i] = valueProvider.applyAsInt(text.charAt(i));
@@ -29,17 +29,17 @@ public class RabinKarp {
         return textValues;
     }
 
-    public RabinKarp(long q, int alphabetSize, int[] textValues) {
+    public RabinKarp(long modulo, int alphabetSize, int[] textValues) {
         Preconditions.checkArgument(alphabetSize > 0);
-        Preconditions.checkArgument(q > alphabetSize);
+        Preconditions.checkArgument(modulo > alphabetSize);
         this.alphabetSize = alphabetSize;
-        this.mod = new ModularArithmetic(q);
+        this.mod = new ModularArithmetic(modulo);
         long inv = mod.moduloInverse(alphabetSize);
         Preconditions.checkState(inv > 0L, "The alphabet size " + alphabetSize
-                + "Must be inversible by modulo " + q);
-        assert inv < q;
+                + "Must be inversible by modulo " + modulo);
+        assert inv < modulo;
         assert mod.isModuloInverse(alphabetSize, inv);
-        this.alphabetSizeInverse = inv;
+        this.inverseAlphabetSize = inv;
         this.textValues = textValues;
     }
 
@@ -49,16 +49,8 @@ public class RabinKarp {
         this.tailExclusive = headInclusive;
         value = 0;
         h = 0;
-        if (tailExclusive > headInclusive) {
-            for (int i = 0; i < (tailExclusive - headInclusive); i++) {
-                if (i == 0) {
-                    h = 1;
-                    value = textValues[headInclusive];
-                    this.tailExclusive = headInclusive + 1;
-                } else {
-                    extendTail();
-                }
-            }
+        for (int i = 0; i < (tailExclusive - headInclusive); i++) {
+            extendTail();
         }
         assert checkInvariants();
         return this;
@@ -93,7 +85,7 @@ public class RabinKarp {
             value = mod.sum((value - tailValue) / alphabetSize, prod_new_head_h);
         } else {
             long sub1 = mod.subtract(value, tailValue);
-            long prod2 = mod.prod(sub1, alphabetSizeInverse);
+            long prod2 = mod.prod(sub1, inverseAlphabetSize);
             value = mod.sum(prod2, prod_new_head_h);
         }
 
@@ -122,7 +114,11 @@ public class RabinKarp {
     }
 
     private void increasePowerOfH() {
-        h = mod.prod(h, alphabetSize);
+        if (h == 0L) {
+            h = 1L;
+        } else {
+            h = mod.prod(h, alphabetSize);
+        }
     }
 
     /** TODO: need this method? */
@@ -164,10 +160,10 @@ public class RabinKarp {
         return value >= 0L
                 && value < mod.modulo()
                 && headInclusive >= 0
-                && headInclusive < textValues.length
+                && headInclusive <= textValues.length // head inclusive can be == length before extendHead
                 && tailExclusive >= 0
                 && tailExclusive <= textValues.length
                 && tailExclusive >= headInclusive
-                && h > 0;
+                && (((length() == 0) && h == 0) || ((length() > 0) && h > 0));
     }
 }
