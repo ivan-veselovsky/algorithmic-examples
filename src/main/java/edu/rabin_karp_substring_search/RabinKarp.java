@@ -128,6 +128,10 @@ public class RabinKarp {
         }
     }
 
+    public boolean canExtendHead() {
+        return (headInclusive > 0);
+    }
+
     public boolean extendHead() {
         if (headInclusive == 0) {
             return false;
@@ -144,6 +148,10 @@ public class RabinKarp {
 
         assert checkInvariants();
         return true;
+    }
+
+    public boolean canExtendTail() {
+        return (tailExclusive < textValues.length);
     }
 
     public boolean extendTail() {
