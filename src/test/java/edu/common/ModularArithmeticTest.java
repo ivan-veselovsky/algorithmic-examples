@@ -45,15 +45,15 @@ class ModularArithmeticTest {
 
     @Test
     void sum() {
-        ModularArithmetic mod = new ModularArithmetic(7);
+        ModularArithmetic mod7 = new ModularArithmetic(7);
 
-        then(mod.sum(0, 1)).isEqualTo(1L);
-        then(mod.sum(5, 3)).isEqualTo(1L);
+        then(mod7.sum(0, 1)).isEqualTo(1L);
+        then(mod7.sum(5, 3)).isEqualTo(1L);
 
-        then(mod.subtract(1, 2)).isEqualTo(6L);
-        then(mod.subtract(0, 15)).isEqualTo(6L);
-        then(mod.subtract(1, 1)).isEqualTo(0L);
-        then(mod.subtract(3, 5)).isEqualTo(5L);
+        then(mod7.subtract(1, 2)).isEqualTo(6L);
+        then(mod7.subtract(0, 15)).isEqualTo(6L);
+        then(mod7.subtract(1, 1)).isEqualTo(0L);
+        then(mod7.subtract(3, 5)).isEqualTo(5L);
     }
 
     @Test
@@ -97,5 +97,14 @@ class ModularArithmeticTest {
         then(mod7.prod(1, -2)).isEqualTo(5L);
         then(mod7.prod(-5, -3)).isEqualTo(1L);
         then(mod7.prod(-8, 5)).isEqualTo(2L);
+    }
+
+    @Test
+    void test_power() {
+        BigInteger a4 = fromLong(4);
+        BigInteger pow = a4.pow(945);
+        //System.out.println(pow);
+        BigInteger maxLong = fromLong(Long.MAX_VALUE);
+        then(pow.compareTo(maxLong)).isGreaterThan(0);
     }
 }

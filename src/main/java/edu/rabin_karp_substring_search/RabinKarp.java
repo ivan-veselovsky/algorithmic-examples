@@ -14,6 +14,7 @@ import java.util.function.IntUnaryOperator;
 public class RabinKarp {
     // actually it should be the largest prime, such that q * alphabetModule < Long.MAX_VALUE
     public static final long q_26 = 354745078340568241L;
+    public static final long q_62 = 148764065110560881L;
 
     private final ModularArithmetic mod;
     private final int alphabetSize; // d
@@ -39,6 +40,15 @@ public class RabinKarp {
         this(true, modulo, alphabetSize, textValues);
     }
 
+    private boolean textValuesAreWithinAlphabetSize() {
+        for (int textValue : textValues) {
+            if (textValue < 0 || textValue >= alphabetSize) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public RabinKarp(boolean bigEndian, long modulo,
                      int alphabetSize, int[] textValues) {
         Preconditions.checkArgument(alphabetSize > 0);
@@ -53,6 +63,7 @@ public class RabinKarp {
         this.inverseAlphabetSize = inv;
         this.textValues = textValues;
         this.bigEndian = bigEndian;
+        assert textValuesAreWithinAlphabetSize();
     }
 
     public RabinKarp compute(final int headInclusive, final int tailExclusive) {
@@ -120,7 +131,10 @@ public class RabinKarp {
     private void shiftToMostSignificant(int leastSignificantValueToSubtract, int mostSignificantValueToAdd) {
         final long prod_new_head_h = mod.prod(mostSignificantValueToAdd, h);
         if (mod.modCount() == 0) {
-            value = mod.sum((value - leastSignificantValueToSubtract) / alphabetSize, prod_new_head_h);
+            long diff = value - leastSignificantValueToSubtract;
+            assert (diff % alphabetSize) == 0 : "diff % alphabetSize: " + (diff % alphabetSize);
+            long v1 = diff / alphabetSize;
+            value = mod.sum(v1, prod_new_head_h);
         } else {
             long sub1 = mod.subtract(value, leastSignificantValueToSubtract);
             long prod2 = mod.prod(sub1, inverseAlphabetSize);
@@ -229,7 +243,7 @@ public class RabinKarp {
         return value >= 0L
                 && value < mod.modulo()
                 && headInclusive >= 0
-                && headInclusive <= textValues.length // head inclusive can be == length before extendHead
+                && headInclusive <= textValues.length // yes, head inclusive can be == length before extendHead
                 && tailExclusive >= 0
                 && tailExclusive <= textValues.length
                 && tailExclusive >= headInclusive

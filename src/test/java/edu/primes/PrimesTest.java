@@ -65,6 +65,10 @@ class PrimesTest {
         long p2 = floorPrime(Long.MAX_VALUE / 26);
         then(p2).isEqualTo(354745078340568241L);
         then(p2 * 26 < Long.MAX_VALUE).isTrue();
+
+        long p3 = floorPrime(Long.MAX_VALUE / 62);
+        then(p3).isEqualTo(148764065110560881L);
+        then(p3 * 62 < Long.MAX_VALUE).isTrue();
     }
 
 }
