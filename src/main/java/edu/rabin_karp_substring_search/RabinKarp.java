@@ -216,7 +216,7 @@ public class RabinKarp {
      */
     public int maybeMatch(RabinKarp another) {
         if (value == another.value()) {
-            if (mod.modCount() == 0 || isRealHit(another)) {
+            if ((mod.modCount() == 0 && another.mod().modCount() == 0) || isRealHit(another)) {
                 return 1;
             } else {
                 return -1;

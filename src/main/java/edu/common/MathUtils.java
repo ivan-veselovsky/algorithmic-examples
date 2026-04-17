@@ -1,6 +1,7 @@
 package edu.common;
 
 import java.math.BigInteger;
+import java.util.function.IntFunction;
 
 public class MathUtils {
 
@@ -33,6 +34,48 @@ public class MathUtils {
         BigInteger bi = new BigInteger(bytes);
         assert bi.longValueExact() == x;
         return bi;
+    }
+
+    /**
+     * Finds index of root.
+     * Assumed there is only one root in the given interval.
+     */
+    public static HalfIndex bisectFindRoot(IntFunction<Integer> f, int fromInclusive, int toExclusive) {
+        int left = fromInclusive;
+        int right = toExclusive - 1;
+
+        int loopCount = 0;
+        while (true) {
+            loopCount++;
+            if (left == right) {
+                return HalfIndex.ofExact(left);
+            }
+            int valueLeft = f.apply(left);
+            int valueRight = f.apply(right);
+
+            if (valueLeft == 0) {
+                return HalfIndex.ofExact(left);
+            }
+            if (valueRight == 0) {
+                return HalfIndex.ofExact(right);
+            }
+            if (sign(valueLeft) == sign(valueRight)) {
+                throw new IllegalStateException("Loop " + loopCount + ": same sign of value between " + left + " and " + right
+                        + ", valueLeft = " + valueLeft + ", valueRight = " + valueRight);
+            } else {
+                int middle = (left + right) / 2;
+                if (middle == left) {
+                    return HalfIndex.ofIndexPlusHalf(left); // +1/2
+                } else {
+                    int valueMiddle = f.apply(middle);
+                    if (sign(valueMiddle) == sign(valueLeft)) {
+                        left = middle;
+                    } else {
+                        right = middle;
+                    }
+                }
+            }
+        }
     }
 
 }
