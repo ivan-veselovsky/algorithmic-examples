@@ -2,7 +2,9 @@ package edu.word_matrix;
 
 import lombok.SneakyThrows;
 
+import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -19,7 +21,17 @@ public class MaxNumberOfIdenticalRows {
    private int k;
 
    @SneakyThrows
-   public int read(String path) {
+   public int readClasspathResource(String name) {
+      URL url = getClass().getClassLoader().getResource(name);
+      if (url == null) {
+         throw new IllegalArgumentException("Resource [" + name + "] not found.");
+      }
+      Path path = Paths.get(url.toURI());
+      return readPath(path.toString());
+   }
+
+   @SneakyThrows
+   public int readPath(String path) {
       List<String> lines = Files.readAllLines(Paths.get(path));
 
       int matrixElementCount = 0;
@@ -37,7 +49,6 @@ public class MaxNumberOfIdenticalRows {
 
             matrixElementCount += readAndFillMany(line);
          }
-
       }
 
       return matrixElementCount;
@@ -83,7 +94,7 @@ public class MaxNumberOfIdenticalRows {
    }
 
    RowColChar readRowColChar(String ch) {
-      // ch(1,11,l).
+      // character(1,11,l).
       String data = substringBetween(ch, "(", ")");
 
       String first = substringBefore(data, ",");
