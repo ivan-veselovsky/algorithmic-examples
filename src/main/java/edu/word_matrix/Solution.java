@@ -87,6 +87,28 @@ public class Solution {
       for (RankedColumnMatrix.Row row: rows) {
          System.out.println(row);
       }
+
+      rows = rows.stream().filter(row -> !row.isFullHouse()).toList();
+
+      System.out.println("=========================");
+      writeMatrixToLP(rows);
+   }
+
+   void writeMatrixToLP(List<RankedColumnMatrix.Row> rows) {
+      System.out.println("row(1.." + rows.size() + ").");
+      System.out.println("col(1.." + rows.getFirst().rowData().size() + ").");
+      System.out.println();
+
+      int rowIndex = 0;
+      for (RankedColumnMatrix.Row row: rows) {
+         rowIndex++;
+         int colIndex = 0;
+         for (int data: row.rowData()) {
+            colIndex++;
+            System.out.print("ch(" + rowIndex + "," + colIndex + "," + data + "). ");
+         }
+         System.out.println();
+      }
    }
 
    public interface RankedColumn {

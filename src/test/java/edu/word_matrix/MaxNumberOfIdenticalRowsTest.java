@@ -19,14 +19,6 @@ class MaxNumberOfIdenticalRowsTest {
       then(max.getK()).isEqualTo(17);
 
       then(count).isEqualTo(max.getHeight() * max.getWidth());
-
-      for (int y=0; y<max.getHeight(); y++) {
-         for (int x=0; x<max.getWidth(); x++) {
-            char ch = max.getMatrix()[y][x];
-            System.out.print(ch + " ");
-         }
-         System.out.println();
-      }
    }
 
    @Test
@@ -70,6 +62,16 @@ class MaxNumberOfIdenticalRowsTest {
       // TODO: investigational test, add assertions
       final MaxNumberOfIdenticalRows max = new MaxNumberOfIdenticalRows();
       val count = max.readClasspathResource("example_1.lp");
+
+      Solution solution = new Solution();
+      solution.solve(max.getMatrix());
+   }
+
+   @Test
+   void solve_example_a() {
+      // TODO: investigational test, add assertions
+      final MaxNumberOfIdenticalRows max = new MaxNumberOfIdenticalRows();
+      val count = max.readClasspathResource("example_a.lp");
 
       Solution solution = new Solution();
       solution.solve(max.getMatrix());
